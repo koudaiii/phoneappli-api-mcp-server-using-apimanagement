@@ -4,9 +4,12 @@
 
 Azure API Management Basic v2 を使用した PHONE APPLI API の MCP サーバー実装です。
 
+- Support バージョン
+  - PHONE APPLI API バージョン [v1.20](https://developer.phoneappli.net/api/v1.20/reference.html)
+
 ## 概要
 
-このプロジェクトは、[PHONE APPLI API](https://developer.phoneappli.net/) を Azure API Management 経由で公開するためのインフラストラクチャとツールを提供します。
+このプロジェクトは、[PHONE APPLI API](https://developer.phoneappli.net/api/v1.20/reference.html) を Azure API Management 経由で公開するためのインフラストラクチャとツールを提供します。
 
 主な機能:
 - ✅ OpenAPI Specification (v1.20.0) のバリデーション
@@ -41,7 +44,7 @@ az login
 
 ### 2. PHONE APPLI API キーの設定
 
-PHONE APPLI API にアクセスするには API キーが必要です。[PHONE APPLI Developer Portal](https://developer.phoneappli.net/) から取得してください。
+PHONE APPLI API にアクセスするには API キーが必要です。PHONE APPLI Developer Portal から取得してください。
 
 ```bash
 # 環境変数に API キーを設定
@@ -350,7 +353,7 @@ MIT License - 詳細は [LICENSE](LICENSE) を参照してください。
 
 ## 参考資料
 
-- [PHONE APPLI API ドキュメント](https://developer.phoneappli.net/)
+- [PHONE APPLI API ドキュメント v1.20](https://developer.phoneappli.net/api/v1.20/reference.html)
 - [Azure API Management ドキュメント](https://learn.microsoft.com/azure/api-management/)
 - [Azure Verified Modules](https://azure.github.io/Azure-Verified-Modules/)
 - [uv ドキュメント](https://docs.astral.sh/uv/)
