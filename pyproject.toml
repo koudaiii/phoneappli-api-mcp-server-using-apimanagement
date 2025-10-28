@@ -1,7 +1,7 @@
 [project]
 name = "phoneappli-api-mcp-server"
 version = "0.1.0"
-description = "PhoneAppli API MCP Server using Azure API Management"
+description = "PHONE APPLI API MCP Server using Azure API Management"
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT" }

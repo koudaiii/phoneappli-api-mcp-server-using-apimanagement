@@ -7,7 +7,7 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
-echo "==> Bootstrapping PhoneAppli API MCP Server environment..."
+echo "==> Bootstrapping PHONE APPLI API MCP Server environment..."
 
 # Check if uv is installed
 echo -n "Checking for uv... "

@@ -20,7 +20,7 @@ param tags object
 @allowed(['sandbox', 'production'])
 param environment string
 
-@description('PhoneAppli API Key')
+@description('PHONE APPLI API Key')
 @secure()
 param phoneAppliApiKey string
 

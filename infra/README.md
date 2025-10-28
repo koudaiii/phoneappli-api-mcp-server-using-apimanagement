@@ -33,7 +33,7 @@ infra/
 | `apimServiceName` | API Management サービス名（グローバルに一意） | `phoneappli-api-${uniqueString}` |
 | `location` | デプロイ先のリージョン | `japaneast` |
 | `publisherEmail` | 発行者のメールアドレス | `admin@example.com` |
-| `publisherName` | 発行者の組織名 | `PhoneAppli API Organization` |
+| `publisherName` | 発行者の組織名 | `PHONE APPLI API Organization` |
 
 ### オプションパラメータ
 
@@ -41,7 +41,7 @@ infra/
 |------------|------|------------|
 | `tags` | リソースに付与するタグ | `{ project: 'phoneappli-api-mcp-server', ... }` |
 | `environment` | ターゲット環境（`sandbox` または `production`） | `sandbox` |
-| `phoneAppliApiKey` | PhoneAppli API キー | `''` (空文字列) |
+| `phoneAppliApiKey` | PHONE APPLI API キー | `''` (空文字列) |
 
 ## デプロイ方法
 
@@ -59,7 +59,7 @@ param publisherName = 'Your Organization Name'
 プロジェクトルートから以下のコマンドを実行します。
 
 ```bash
-# PhoneAppli API キーの設定（必須）
+# PHONE APPLI API キーの設定（必須）
 export PHONEAPPLI_API_KEY="your-api-key"
 
 # 環境変数の設定（オプション）
