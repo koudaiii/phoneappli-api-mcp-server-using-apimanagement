@@ -11,6 +11,8 @@ Azure API Management Basic v2 を使用した PhoneAppli API の MCP サーバ�
 - ✅ Azure API Management Basic v2 のプロビジョニング（Bicep + Azure Verified Modules）
 - ✅ OpenAPI Spec の自動インポート
 - ✅ 完全自動化されたデプロイメントスクリプト
+- ✅ PhoneAppli API キー（X-Pa-Api-Key）の自動設定
+- ✅ サンドボックス/本番環境の切り替え対応
 
 ## 前提条件
 
@@ -35,7 +37,18 @@ cd phoneappli-api-mcp-server-using-apimanagement
 az login
 ```
 
-### 2. OpenAPI Spec のバリデーション
+### 2. PhoneAppli API キーの設定
+
+PhoneAppli API にアクセスするには API キーが必要です。[PhoneAppli Developer Portal](https://developer.phoneappli.net/) から取得してください。
+
+```bash
+# 環境変数に API キーを設定
+export PHONEAPPLI_API_KEY="your-api-key"
+```
+
+**重要**: API キーは機密情報です。リポジトリにコミットしないでください。
+
+### 3. OpenAPI Spec のバリデーション
 
 ```bash
 ./script/validate
@@ -60,7 +73,9 @@ Operations: 120
 ✓ Validation successful!
 ```
 
-### 3. Azure へのデプロイ
+### 4. Azure へのデプロイ
+
+デプロイ前に API キーが設定されていることを確認してください。
 
 ```bash
 # デプロイ実行（API Management 作成 + API インポート）
@@ -83,7 +98,9 @@ export ENVIRONMENT="production"
 ./script/deploy
 ```
 
-### 4. リソースのクリーンアップ
+[MCP Server セットアップ](./docs/SETUP-MCP-SERVER.md)
+
+### 5. リソースのクリーンアップ
 
 ```bash
 ./script/cleanup <resouce_group_name>
@@ -220,6 +237,7 @@ az deployment group create \
 
 | 変数名 | 説明 | デフォルト値 |
 |-------|------|------------|
+| `PHONEAPPLI_API_KEY` | PhoneAppli API キー（必須） | なし |
 | `DEPLOYMENT_NAME` | デプロイメント名（リソースグループ名としても使用） | `phoneappli-api-mcp-{timestamp}` |
 | `LOCATION` | デプロイ先のリージョン | `japaneast` |
 | `ENVIRONMENT` | ターゲット環境（`sandbox` または `production`） | `sandbox` |
@@ -248,11 +266,28 @@ az bicep upgrade
 
 API Management Basic v2 のプロビジョニングには通常時間がかかります。`./script/deploy` は自動的に完了を待機します。
 
+### API キーが設定されていない
+
+デプロイ時に以下のエラーが表示される場合：
+```
+Error: PHONEAPPLI_API_KEY environment variable is not set.
+```
+
+環境変数を設定してください：
+```bash
+# Sandbox 環境（デフォルト）
+export PHONEAPPLI_API_KEY="your-sandbox-api-key"
+
+# Production 環境
+export PHONEAPPLI_API_KEY="your-production-api-key"
+```
+
 ### API インポートが失敗する
 
 1. API Management のプロビジョニングが完了しているか確認
 2. OpenAPI Spec のバリデーションが成功しているか確認: `./script/validate`
 3. Azure へのログイン状態を確認: `az account show`
+4. API キーが正しく設定されているか確認
 
 ## 開発
 

@@ -18,3 +18,11 @@ param tags = {
   managedBy: 'bicep'
   cost-center: 'engineering'
 }
+
+// Environment (sandbox or production)
+param environment = 'sandbox'
+
+// PhoneAppli API Key
+// IMPORTANT: This is a placeholder value. You MUST override this during deployment.
+// Set environment variable PHONEAPPLI_API_KEY with your API key.
+param phoneAppliApiKey = ''
