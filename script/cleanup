@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+set -e
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+# Default values
+RESOURCE_GROUP="${RESOURCE_GROUP:-phoneappli-api-mcp-rg}"
+
+echo "==> Cleaning up PhoneAppli API MCP Server resources..."
+echo ""
+echo -e "${YELLOW}WARNING: This will delete the following resource group and all its resources:${NC}"
+echo "  Resource Group: ${RESOURCE_GROUP}"
+echo ""
+
+# Check if logged in to Azure
+if ! az account show &> /dev/null; then
+    echo -e "${RED}Error: Not logged in to Azure.${NC}"
+    echo "Please run: az login"
+    exit 1
+fi
+
+# Check if resource group exists
+if ! az group show --name "${RESOURCE_GROUP}" &> /dev/null; then
+    echo -e "${YELLOW}Resource group '${RESOURCE_GROUP}' does not exist.${NC}"
+    echo "Nothing to clean up."
+    exit 0
+fi
+
+# List resources in the group
+echo "Resources in the group:"
+az resource list --resource-group "${RESOURCE_GROUP}" --output table
+echo ""
+
+# Confirmation prompt
+read -p "Are you sure you want to delete this resource group? (yes/no): " CONFIRMATION
+
+if [ "${CONFIRMATION}" != "yes" ]; then
+    echo "Cleanup cancelled."
+    exit 0
+fi
+
+# Delete resource group
+echo ""
+echo "==> Deleting resource group: ${RESOURCE_GROUP}"
+echo "This may take several minutes..."
+
+az group delete \
+    --name "${RESOURCE_GROUP}" \
+    --yes \
+    --no-wait
+
+echo ""
+echo -e "${GREEN}==> Cleanup initiated successfully!${NC}"
+echo ""
+echo "Note: Resource deletion is running in the background."
+echo "Check status with: az group show --name ${RESOURCE_GROUP}"
