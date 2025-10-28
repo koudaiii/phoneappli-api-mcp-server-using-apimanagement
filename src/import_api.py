@@ -17,6 +17,7 @@ from azure.mgmt.apimanagement.models import (
     ApiCreateOrUpdateParameter,
     ApiType,
     ContentFormat,
+    PolicyContract,
     Protocol,
 )
 from rich.console import Console
@@ -67,6 +68,41 @@ def get_api_info_from_spec(file_path: Path) -> dict[str, Any]:
         "version": info.get("version", "1.0"),
         "description": info.get("description", ""),
     }
+
+
+def generate_api_policy(environment: str) -> str:
+    """
+    Generate API-level policy XML with X-Pa-Api-Key header.
+
+    Args:
+        environment: Target environment ('sandbox' or 'production')
+
+    Returns:
+        Policy XML string
+    """
+    # Map environment to Named Value
+    named_value = f"phoneappli-api-key-{environment}"
+
+    policy_xml = f"""<policies>
+    <inbound>
+        <base />
+        <!-- Add PhoneAppli API Key header for backend authentication -->
+        <set-header name="X-Pa-Api-Key" exists-action="override">
+            <value>{{{{"{named_value}"}}}}</value>
+        </set-header>
+    </inbound>
+    <backend>
+        <base />
+    </backend>
+    <outbound>
+        <base />
+    </outbound>
+    <on-error>
+        <base />
+    </on-error>
+</policies>"""
+
+    return policy_xml
 
 
 def import_api_to_apim(
@@ -170,6 +206,32 @@ def import_api_to_apim(
                 api_id=api_id,
                 parameters=api_params,
             ).result()
+
+            progress.update(task, completed=True)
+
+        # Set API-level policy with X-Pa-Api-Key header
+        console.print(f"\n[cyan]Configuring API policy for {environment} environment...[/cyan]")
+        policy_xml = generate_api_policy(environment)
+
+        with Progress(
+            SpinnerColumn(),
+            TextColumn("[progress.description]{task.description}"),
+            console=console,
+        ) as progress:
+            task = progress.add_task(description="Setting API policy...", total=None)
+
+            policy_contract = PolicyContract(
+                value=policy_xml,
+                format="xml",
+            )
+
+            apim_client.api_policy.create_or_update(
+                resource_group_name=resource_group,
+                service_name=apim_name,
+                api_id=api_id,
+                policy_id="policy",
+                parameters=policy_contract,
+            )
 
             progress.update(task, completed=True)
 

@@ -24,6 +24,18 @@ if [[ ! "${ENVIRONMENT}" =~ ^(sandbox|production)$ ]]; then
     exit 1
 fi
 
+# Check for API key
+if [ -z "${PHONEAPPLI_API_KEY}" ]; then
+    echo -e "${RED}Error: PHONEAPPLI_API_KEY environment variable is not set.${NC}"
+    echo "Please set it before running this script:"
+    echo "  export PHONEAPPLI_API_KEY=\"your-api-key\""
+    echo "Or run with: PHONEAPPLI_API_KEY=\"your-api-key\" script/deploy"
+    if [ "${ENVIRONMENT}" == "production" ]; then
+        echo "Note: For production environment, use: PHONEAPPLI_API_KEY=\"your-api-key\" ENVIRONMENT=production script/deploy"
+    fi
+    exit 1
+fi
+
 echo "==> Deploying PhoneAppli API MCP Server..."
 echo ""
 echo "Configuration:"
@@ -61,6 +73,8 @@ az deployment group create \
     --resource-group "${RESOURCE_GROUP}" \
     --template-file main.bicep \
     --parameters main.bicepparam \
+    --parameters environment="${ENVIRONMENT}" \
+    --parameters phoneAppliApiKey="${PHONEAPPLI_API_KEY}" \
     --output table
 
 echo -e "${GREEN}✓ Bicep deployment completed${NC}"
