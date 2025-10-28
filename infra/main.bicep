@@ -92,7 +92,7 @@ output apimServiceName string = apimService.outputs.name
 output apimResourceId string = apimService.outputs.resourceId
 
 @description('The gateway URL of the API Management service')
-output apimGatewayUrl string = apimService.outputs.gatewayUrl
+output apimGatewayUrl string = 'https://${apimService.outputs.name}.azure-api.net'
 
 @description('The system assigned principal ID')
-output systemAssignedPrincipalId string = apimService.outputs.systemAssignedMIPrincipalId
+output systemAssignedPrincipalId string = apimService.outputs.?systemAssignedMIPrincipalId ?? ''
