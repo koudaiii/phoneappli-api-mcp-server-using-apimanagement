@@ -20,7 +20,7 @@ fi
 
 RESOURCE_GROUP="$1"
 
-echo "==> Cleaning up PhoneAppli API MCP Server resources..."
+echo "==> Cleaning up PHONE APPLI API MCP Server resources..."
 echo ""
 echo -e "${YELLOW}WARNING: This will delete the following resource group and all its resources:${NC}"
 echo "  Resource Group: ${RESOURCE_GROUP}"

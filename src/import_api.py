@@ -86,7 +86,7 @@ def generate_api_policy(environment: str) -> str:
     policy_xml = f"""<policies>
     <inbound>
         <base />
-        <!-- Add PhoneAppli API Key header for backend authentication -->
+        <!-- Add PHONE APPLI API Key header for backend authentication -->
         <set-header name="X-Pa-Api-Key" exists-action="override">
             <value>{{{{"{named_value}"}}}}</value>
         </set-header>

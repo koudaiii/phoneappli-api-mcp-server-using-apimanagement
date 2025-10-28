@@ -1,5 +1,5 @@
 """
-PhoneAppli API MCP Server
+PHONE APPLI API MCP Server
 
 This package contains utilities for validating and importing OpenAPI specifications
 to Azure API Management.

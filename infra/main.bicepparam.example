@@ -10,7 +10,7 @@ param location = 'japaneast'
 // Publisher Information
 // TODO: Replace with your actual email and organization name
 param publisherEmail = 'admin@example.com'
-param publisherName = 'PhoneAppli API Organization'
+param publisherName = 'PHONE APPLI API Organization'
 
 // Tags
 param tags = {
@@ -22,7 +22,7 @@ param tags = {
 // Environment (sandbox or production)
 param environment = 'sandbox'
 
-// PhoneAppli API Key
+// PHONE APPLI API Key
 // IMPORTANT: This is a placeholder value. You MUST override this during deployment.
 // Set environment variable PHONEAPPLI_API_KEY with your API key.
 param phoneAppliApiKey = ''
