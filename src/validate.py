@@ -40,7 +40,7 @@ def load_openapi_spec(file_path: Path) -> dict[str, Any]:
         try:
             spec = yaml.safe_load(f)
         except yaml.YAMLError as e:
-            raise yaml.YAMLError(f"Invalid YAML format: {e}")
+            raise yaml.YAMLError(f"Invalid YAML format: {e}") from e
 
     return spec
 
@@ -61,7 +61,12 @@ def display_spec_info(spec: dict[str, Any]) -> None:
     table.add_row("OpenAPI Version", spec.get("openapi", "N/A"))
     table.add_row("Title", info.get("title", "N/A"))
     table.add_row("Version", info.get("version", "N/A"))
-    table.add_row("Description", (info.get("description", "N/A")[:100] + "...") if len(info.get("description", "")) > 100 else info.get("description", "N/A"))
+    table.add_row(
+        "Description",
+        (info.get("description", "N/A")[:100] + "...")
+        if len(info.get("description", "")) > 100
+        else info.get("description", "N/A"),
+    )
 
     # Count paths and operations
     paths = spec.get("paths", {})
@@ -102,8 +107,7 @@ def validate_openapi_spec(spec: dict[str, Any]) -> bool:
     except OpenAPISpecValidatorError as e:
         console.print(
             Panel(
-                f"[bold red]✗ Validation failed![/bold red]\n\n"
-                f"[red]Error:[/red] {str(e)}",
+                f"[bold red]✗ Validation failed![/bold red]\n\n[red]Error:[/red] {str(e)}",
                 title="Validation Result",
                 border_style="red",
             )

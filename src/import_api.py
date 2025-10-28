@@ -258,8 +258,7 @@ def import_api_to_apim(
     except Exception as e:
         console.print(
             Panel(
-                f"[bold red]✗ API import failed![/bold red]\n\n"
-                f"[red]Error:[/red] {str(e)}",
+                f"[bold red]✗ API import failed![/bold red]\n\n[red]Error:[/red] {str(e)}",
                 title="Import Result",
                 border_style="red",
             )
