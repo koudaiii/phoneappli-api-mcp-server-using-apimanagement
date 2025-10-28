@@ -36,7 +36,7 @@ if [ -z "${PHONEAPPLI_API_KEY}" ]; then
     exit 1
 fi
 
-echo "==> Deploying PhoneAppli API MCP Server..."
+echo "==> Deploying PHONE APPLI API MCP Server..."
 echo ""
 echo "Configuration:"
 echo "  Resource Group: ${RESOURCE_GROUP}"

@@ -1,17 +1,17 @@
-# PhoneAppli API MCP Server using Azure API Management
+# PHONE APPLI API MCP Server using Azure API Management
 
-Azure API Management Basic v2 を使用した PhoneAppli API の MCP サーバー実装です。
+Azure API Management Basic v2 を使用した PHONE APPLI API の MCP サーバー実装です。
 
 ## 概要
 
-このプロジェクトは、[PhoneAppli API](https://developer.phoneappli.net/) を Azure API Management 経由で公開するためのインフラストラクチャとツールを提供します。
+このプロジェクトは、[PHONE APPLI API](https://developer.phoneappli.net/) を Azure API Management 経由で公開するためのインフラストラクチャとツールを提供します。
 
 主な機能:
 - ✅ OpenAPI Specification (v1.20.0) のバリデーション
 - ✅ Azure API Management Basic v2 のプロビジョニング（Bicep + Azure Verified Modules）
 - ✅ OpenAPI Spec の自動インポート
 - ✅ 完全自動化されたデプロイメントスクリプト
-- ✅ PhoneAppli API キー（X-Pa-Api-Key）の自動設定
+- ✅ PHONE APPLI API キー（X-Pa-Api-Key）の自動設定
 - ✅ サンドボックス/本番環境の切り替え対応
 
 ## 前提条件
@@ -37,9 +37,9 @@ cd phoneappli-api-mcp-server-using-apimanagement
 az login
 ```
 
-### 2. PhoneAppli API キーの設定
+### 2. PHONE APPLI API キーの設定
 
-PhoneAppli API にアクセスするには API キーが必要です。[PhoneAppli Developer Portal](https://developer.phoneappli.net/) から取得してください。
+PHONE APPLI API にアクセスするには API キーが必要です。[PHONE APPLI Developer Portal](https://developer.phoneappli.net/) から取得してください。
 
 ```bash
 # 環境変数に API キーを設定
@@ -111,7 +111,7 @@ export ENVIRONMENT="production"
 ```
 .
 ├── docs/
-│   └── v1.20.0.yaml          # PhoneAppli API OpenAPI Specification
+│   └── v1.20.0.yaml          # PHONE APPLI API OpenAPI Specification
 ├── infra/                     # Azure インフラストラクチャ (Bicep)
 │   ├── main.bicep            # メインテンプレート
 │   ├── main.bicepparam       # パラメータ定義
@@ -237,7 +237,7 @@ az deployment group create \
 
 | 変数名 | 説明 | デフォルト値 |
 |-------|------|------------|
-| `PHONEAPPLI_API_KEY` | PhoneAppli API キー（必須） | なし |
+| `PHONEAPPLI_API_KEY` | PHONE APPLI API キー（必須） | なし |
 | `DEPLOYMENT_NAME` | デプロイメント名（リソースグループ名としても使用） | `phoneappli-api-mcp-{timestamp}` |
 | `LOCATION` | デプロイ先のリージョン | `japaneast` |
 | `ENVIRONMENT` | ターゲット環境（`sandbox` または `production`） | `sandbox` |
@@ -326,7 +326,7 @@ MIT License - 詳細は [LICENSE](LICENSE) を参照してください。
 
 ## 参考資料
 
-- [PhoneAppli API ドキュメント](https://developer.phoneappli.net/)
+- [PHONE APPLI API ドキュメント](https://developer.phoneappli.net/)
 - [Azure API Management ドキュメント](https://learn.microsoft.com/azure/api-management/)
 - [Azure Verified Modules](https://azure.github.io/Azure-Verified-Modules/)
 - [uv ドキュメント](https://docs.astral.sh/uv/)
