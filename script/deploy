@@ -73,6 +73,7 @@ az deployment group create \
     --resource-group "${RESOURCE_GROUP}" \
     --template-file main.bicep \
     --parameters main.bicepparam \
+    --parameters apimServiceName="${RESOURCE_GROUP}" \
     --parameters environment="${ENVIRONMENT}" \
     --parameters phoneAppliApiKey="${PHONEAPPLI_API_KEY}" \
     --output table
