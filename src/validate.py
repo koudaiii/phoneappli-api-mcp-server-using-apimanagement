@@ -40,7 +40,7 @@ def load_openapi_spec(file_path: Path) -> dict[str, Any]:
         try:
             spec = yaml.safe_load(f)
         except yaml.YAMLError as e:
-            raise yaml.YAMLError(f"Invalid YAML format: {e}")
+            raise yaml.YAMLError(f"Invalid YAML format: {e}") from e
 
     return spec
 
