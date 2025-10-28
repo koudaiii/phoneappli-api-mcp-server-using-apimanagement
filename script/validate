@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+set -e
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+OPENAPI_SPEC="${PROJECT_ROOT}/docs/v1.20.0.yaml"
+
+echo "==> Validating OpenAPI Specification..."
+echo "  File: ${OPENAPI_SPEC}"
+
+# Check if OpenAPI spec file exists
+if [ ! -f "${OPENAPI_SPEC}" ]; then
+    echo -e "${RED}Error: OpenAPI spec file not found: ${OPENAPI_SPEC}${NC}"
+    exit 1
+fi
+
+# Run Python validation script
+cd "${PROJECT_ROOT}"
+echo ""
+uv run python src/validate.py "${OPENAPI_SPEC}"
+
+EXIT_CODE=$?
+
+echo ""
+if [ ${EXIT_CODE} -eq 0 ]; then
+    echo -e "${GREEN}==> Validation completed successfully!${NC}"
+else
+    echo -e "${RED}==> Validation failed!${NC}"
+    exit ${EXIT_CODE}
+fi

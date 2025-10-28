@@ -1,0 +1,76 @@
+#!/usr/bin/env bash
+set -e
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+echo "==> Bootstrapping PhoneAppli API MCP Server environment..."
+
+# Check if uv is installed
+echo -n "Checking for uv... "
+if ! command -v uv &> /dev/null; then
+    echo -e "${RED}✗${NC}"
+    echo -e "${YELLOW}uv is not installed. Installing via curl...${NC}"
+    curl -LsSf https://astral.sh/uv/install.sh | sh
+    echo -e "${GREEN}✓ uv installed${NC}"
+else
+    echo -e "${GREEN}✓${NC}"
+fi
+
+# Check if Azure CLI is installed
+echo -n "Checking for Azure CLI... "
+if ! command -v az &> /dev/null; then
+    echo -e "${RED}✗${NC}"
+    echo -e "${RED}Error: Azure CLI is not installed.${NC}"
+    echo "Please install Azure CLI: https://learn.microsoft.com/en-us/cli/azure/install-azure-cli"
+    exit 1
+else
+    echo -e "${GREEN}✓${NC}"
+fi
+
+# Check Azure CLI version
+AZ_VERSION=$(az version --output tsv --query '"azure-cli"' 2>/dev/null || echo "unknown")
+echo "  Azure CLI version: ${AZ_VERSION}"
+
+# Install Python dependencies using uv
+echo "==> Installing Python dependencies with uv..."
+uv sync
+echo -e "${GREEN}✓ Dependencies installed${NC}"
+
+# Check Azure login status
+echo -n "Checking Azure login status... "
+if az account show &> /dev/null; then
+    echo -e "${GREEN}✓${NC}"
+    ACCOUNT_NAME=$(az account show --query name -o tsv)
+    SUBSCRIPTION_ID=$(az account show --query id -o tsv)
+    echo "  Logged in as: ${ACCOUNT_NAME}"
+    echo "  Subscription: ${SUBSCRIPTION_ID}"
+else
+    echo -e "${YELLOW}!${NC}"
+    echo -e "${YELLOW}You are not logged in to Azure.${NC}"
+    echo "Please run: az login"
+fi
+
+# Check if Bicep is installed
+echo -n "Checking for Bicep... "
+if az bicep version &> /dev/null; then
+    echo -e "${GREEN}✓${NC}"
+    BICEP_VERSION=$(az bicep version 2>/dev/null | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+    echo "  Bicep version: ${BICEP_VERSION}"
+else
+    echo -e "${YELLOW}!${NC}"
+    echo "Installing Bicep..."
+    az bicep install
+    echo -e "${GREEN}✓ Bicep installed${NC}"
+fi
+
+echo ""
+echo -e "${GREEN}==> Bootstrap completed successfully!${NC}"
+echo ""
+echo "Next steps:"
+echo "  1. Ensure you're logged in to Azure: az login"
+echo "  2. Validate OpenAPI spec: ./script/validate"
+echo "  3. Deploy infrastructure: ./script/deploy"
