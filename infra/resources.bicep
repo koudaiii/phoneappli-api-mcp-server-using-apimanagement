@@ -54,7 +54,7 @@ module apimService 'br/public:avm/res/api-management/service:0.9.0' = {
     namedValues: [
       {
         name: environment == 'sandbox' ? 'phoneappli-api-key-sandbox' : 'phoneappli-api-key-production'
-        displayName: environment == 'sandbox' ? 'PhoneAppli API Key - Sandbox' : 'PhoneAppli API Key - Production'
+        displayName: environment == 'sandbox' ? 'phoneappli-api-key-sandbox' : 'phoneappli-api-key-production'
         secret: true
         value: phoneAppliApiKey
       }
