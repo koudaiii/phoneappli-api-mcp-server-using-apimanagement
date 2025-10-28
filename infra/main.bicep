@@ -33,8 +33,8 @@ module apimService 'br/public:avm/res/api-management/service:0.9.0' = {
     tags: allTags
 
     // SKU Configuration for Basic v2
-    sku: 'Basicv2'
-    skuCount: 1
+    sku: 'BasicV2'
+    skuCapacity: 1
 
     // Publisher information
     publisherEmail: publisherEmail
