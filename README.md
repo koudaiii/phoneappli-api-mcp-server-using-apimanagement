@@ -1,5 +1,7 @@
 # PhoneAppli API MCP Server using Azure API Management
 
+[![CI](https://github.com/koudaiii/phoneappli-api-mcp-server-using-apimanagement/actions/workflows/ci.yml/badge.svg)](https://github.com/koudaiii/phoneappli-api-mcp-server-using-apimanagement/actions/workflows/ci.yml)
+
 Azure API Management Basic v2 を使用した PhoneAppli API の MCP サーバー実装です。
 
 ## 概要
@@ -317,8 +319,30 @@ uv run ruff format .
 ### テストの実行
 
 ```bash
+# すべてのテストを実行
+./script/test
+
+# カバレッジレポート付きでテストを実行
+./script/test -c
+
+# 詳細な出力でテストを実行
+./script/test -v
+
+# 特定のテストファイルを実行
+./script/test tests/test_validate.py
+
+# カバレッジと詳細出力の両方
+./script/test -c -v
+
+# 直接 pytest を実行する場合
 uv run pytest
 ```
+
+テストスクリプトのオプション:
+- `-c, --coverage`: カバレッジレポートを表示
+- `-v, --verbose`: 詳細な出力
+- `-w, --watch`: ウォッチモード（pytest-watch が必要）
+- `-h, --help`: ヘルプメッセージを表示
 
 ## ライセンス
 
