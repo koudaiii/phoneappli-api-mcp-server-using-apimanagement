@@ -107,7 +107,7 @@ az apim show \
 すべてのリソースを削除するには、以下のコマンドを実行します。
 
 ```bash
-./script/cleanup
+./script/cleanup <resouce_group_name>
 ```
 
 または、手動で削除する場合：
