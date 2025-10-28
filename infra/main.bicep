@@ -50,34 +50,37 @@ module apimService 'br/public:avm/res/api-management/service:0.9.0' = {
     }
 
     // API settings
-    apiManagementServicePolicy: {
-      value: '''
-        <policies>
-          <inbound>
-            <cors allow-credentials="false">
-              <allowed-origins>
-                <origin>*</origin>
-              </allowed-origins>
-              <allowed-methods>
-                <method>GET</method>
-                <method>POST</method>
-                <method>PUT</method>
-                <method>PATCH</method>
-                <method>DELETE</method>
-              </allowed-methods>
-              <allowed-headers>
-                <header>*</header>
-              </allowed-headers>
-            </cors>
-          </inbound>
-          <backend>
-            <forward-request />
-          </backend>
-          <outbound />
-          <on-error />
-        </policies>
-      '''
-    }
+    policies: [
+      {
+        format: 'xml'
+        value: '''
+          <policies>
+            <inbound>
+              <cors allow-credentials="false">
+                <allowed-origins>
+                  <origin>*</origin>
+                </allowed-origins>
+                <allowed-methods>
+                  <method>GET</method>
+                  <method>POST</method>
+                  <method>PUT</method>
+                  <method>PATCH</method>
+                  <method>DELETE</method>
+                </allowed-methods>
+                <allowed-headers>
+                  <header>*</header>
+                </allowed-headers>
+              </cors>
+            </inbound>
+            <backend>
+              <forward-request />
+            </backend>
+            <outbound />
+            <on-error />
+          </policies>
+        '''
+      }
+    ]
   }
 }
 
