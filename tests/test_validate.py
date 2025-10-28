@@ -59,9 +59,7 @@ class TestValidateOpenAPISpec:
 
     @patch("validate.validate")
     @patch("validate.console")
-    def test_validate_valid_spec(
-        self, mock_console: MagicMock, mock_validate: MagicMock
-    ) -> None:
+    def test_validate_valid_spec(self, mock_console: MagicMock, mock_validate: MagicMock) -> None:
         """Test validating a valid OpenAPI spec."""
         spec = {"openapi": "3.0.0", "info": {"title": "Test", "version": "1.0"}}
 
@@ -73,9 +71,7 @@ class TestValidateOpenAPISpec:
 
     @patch("validate.validate")
     @patch("validate.console")
-    def test_validate_invalid_spec(
-        self, mock_console: MagicMock, mock_validate: MagicMock
-    ) -> None:
+    def test_validate_invalid_spec(self, mock_console: MagicMock, mock_validate: MagicMock) -> None:
         """Test validating an invalid OpenAPI spec."""
         spec = {"invalid": "spec"}
         mock_validate.side_effect = OpenAPISpecValidatorError("Invalid spec")
@@ -187,9 +183,7 @@ class TestMain:
 
     @patch("validate.load_openapi_spec")
     @patch("validate.console")
-    def test_main_file_not_found(
-        self, mock_console: MagicMock, mock_load: MagicMock
-    ) -> None:
+    def test_main_file_not_found(self, mock_console: MagicMock, mock_load: MagicMock) -> None:
         """Test main function with non-existent file."""
         mock_load.side_effect = FileNotFoundError("File not found")
 
@@ -200,9 +194,7 @@ class TestMain:
 
     @patch("validate.load_openapi_spec")
     @patch("validate.console")
-    def test_main_yaml_error(
-        self, mock_console: MagicMock, mock_load: MagicMock
-    ) -> None:
+    def test_main_yaml_error(self, mock_console: MagicMock, mock_load: MagicMock) -> None:
         """Test main function with YAML parsing error."""
         mock_load.side_effect = yaml.YAMLError("Invalid YAML")
 

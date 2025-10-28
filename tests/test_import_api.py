@@ -90,7 +90,7 @@ class TestGenerateAPIPolicy:
         policy = generate_api_policy("sandbox")
 
         assert "phoneappli-api-key-sandbox" in policy
-        assert "<set-header name=\"X-Pa-Api-Key\"" in policy
+        assert '<set-header name="X-Pa-Api-Key"' in policy
         assert "<policies>" in policy
         assert "</policies>" in policy
 
@@ -99,7 +99,7 @@ class TestGenerateAPIPolicy:
         policy = generate_api_policy("production")
 
         assert "phoneappli-api-key-production" in policy
-        assert "<set-header name=\"X-Pa-Api-Key\"" in policy
+        assert '<set-header name="X-Pa-Api-Key"' in policy
         assert "<policies>" in policy
         assert "</policies>" in policy
 
@@ -138,9 +138,7 @@ class TestImportAPIToAPIM:
         mock_subscription = Mock()
         mock_subscription.subscription_id = "test-subscription-id"
         mock_subscription_client_instance = Mock()
-        mock_subscription_client_instance.subscriptions.list.return_value = [
-            mock_subscription
-        ]
+        mock_subscription_client_instance.subscriptions.list.return_value = [mock_subscription]
 
         # Mock APIM client
         mock_api_result = Mock()
@@ -176,9 +174,7 @@ class TestImportAPIToAPIM:
         mock_apim_instance.api_policy.create_or_update.assert_called_once()
 
     @patch("import_api.console")
-    def test_import_api_invalid_environment(
-        self, mock_console: MagicMock, tmp_path: Path
-    ) -> None:
+    def test_import_api_invalid_environment(self, mock_console: MagicMock, tmp_path: Path) -> None:
         """Test import with invalid environment."""
         spec_file = tmp_path / "openapi.yaml"
         spec_file.write_text("openapi: 3.0.0")
@@ -222,9 +218,7 @@ class TestMain:
 
     @patch("import_api.import_api_to_apim")
     @patch("import_api.console")
-    def test_main_success(
-        self, mock_console: MagicMock, mock_import: MagicMock, tmp_path: Path
-    ) -> None:
+    def test_main_success(self, mock_console: MagicMock, mock_import: MagicMock, tmp_path: Path) -> None:
         """Test main function with successful import."""
         spec_file = tmp_path / "openapi.yaml"
         spec_file.write_text("openapi: 3.0.0")
@@ -251,9 +245,7 @@ class TestMain:
 
     @patch("import_api.import_api_to_apim")
     @patch("import_api.console")
-    def test_main_import_failure(
-        self, mock_console: MagicMock, mock_import: MagicMock, tmp_path: Path
-    ) -> None:
+    def test_main_import_failure(self, mock_console: MagicMock, mock_import: MagicMock, tmp_path: Path) -> None:
         """Test main function with import failure."""
         spec_file = tmp_path / "openapi.yaml"
         spec_file.write_text("openapi: 3.0.0")
@@ -295,9 +287,7 @@ class TestMain:
 
     @patch("import_api.import_api_to_apim")
     @patch("import_api.console")
-    def test_main_with_custom_parameters(
-        self, mock_console: MagicMock, mock_import: MagicMock, tmp_path: Path
-    ) -> None:
+    def test_main_with_custom_parameters(self, mock_console: MagicMock, mock_import: MagicMock, tmp_path: Path) -> None:
         """Test main function with custom API ID and path."""
         spec_file = tmp_path / "openapi.yaml"
         spec_file.write_text("openapi: 3.0.0")
