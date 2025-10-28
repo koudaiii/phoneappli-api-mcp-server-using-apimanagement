@@ -135,67 +135,6 @@ https://portal.azure.com
      remaining-calls-variable-name="remainingCallsPerIP" />
    ```
 
-#### 認証の設定
-
-**A. サブスクリプションキー認証**
-
-1. **ヘッダー要件の設定**
-   ```xml
-   <check-header name="Ocp-Apim-Subscription-Key" failed-check-httpcode="401" 
-                 failed-check-error-message="Subscription key required" />
-   ```
-
-**B. Microsoft Entra ID トークン認証**
-
-1. **JWT 検証ポリシー**
-   ```xml
-   <validate-azure-ad-token 
-     tenant-id="your-entra-tenant-id" 
-     header-name="Authorization" 
-     failed-validation-httpcode="401" 
-     failed-validation-error-message="Unauthorized. Access token is missing or invalid.">     
-       <client-application-ids>
-           <application-id>your-client-application-id</application-id>
-       </client-application-ids> 
-   </validate-azure-ad-token>
-   ```
-
-#### 認証ヘッダーの転送設定
-
-**方法1: 明示的なヘッダー転送**
-```xml
-<!-- Forward Authorization header to backend --> 
-<set-header name="Authorization" exists-action="override"> 
-    <value>@(context.Request.Headers.GetValueOrDefault("Authorization"))</value> 
-</set-header>
-```
-
-**方法2: 認証情報管理の利用**
-- API Management の認証情報マネージャーを活用
-- `get-authorization-context` および `set-header` ポリシーを使用
-
-### ステップ 3: Visual Studio Code での設定
-
-#### 基本設定
-
-1. **MCP サーバーの追加**
-   - コマンドパレット（Cmd/Ctrl + Shift + P）
-   - 「MCP: Add Server」コマンドを実行
-
-2. **サーバータイプの選択**
-   - 「HTTP (HTTP or Server Sent Events)」を選択
-
-3. **サーバー情報の入力**
-   - **Server URL**: API Management の MCP エンドポイント
-     ```
-     https://<apim-service-name>.azure-api.net/<api-name>-mcp/mcp
-     ```
-   - **Server ID**: 任意の識別名を入力
-
-4. **設定保存場所の選択**
-   - **Workspace settings**: 現在のワークスペースのみ（`.vscode/mcp.json`）
-   - **User settings**: 全ワークスペースで利用可能（グローバル `settings.json`）
-
 #### 認証設定
 
 **サブスクリプションキーを使用する場合の設定例:**
@@ -212,23 +151,101 @@ https://portal.azure.com
 }
 ```
 
-**OAuth トークンを使用する場合の設定例:**
+### ステップ 4: 動作確認とテスト
+
+**設定の検証**
+
+```bash
+npx mcp-remote "https://<apim-service-name>.azure-api.net/<api-name>-mcp/mcp" \
+  --header "Ocp-Apim-Subscription-Key: <subscription-key>"
+```
+
+#### curl を使用した直接テスト
+
+**1. MCP サーバーの初期化確認**
+
+```bash
+# MCP サーバーの初期化テスト
+curl -X POST \
+  'https://<apim-service-name>.azure-api.net/<api-name>-mcp/mcp' \
+  -H 'Ocp-Apim-Subscription-Key: <subscription-key>' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "initialize",
+    "params": {
+      "protocolVersion": "2025-06-18",
+      "capabilities": {
+        "tools": {}
+      },
+      "clientInfo": {
+        "name": "test-client",
+        "version": "1.0.0"
+      }
+    }
+  }'
+```
+
+**2. 利用可能なツールの取得**
+
+```bash
+# ツール一覧の取得
+curl -X POST \
+  'https://<apim-service-name>.azure-api.net/<api-name>-mcp/mcp' \
+  -H 'Ocp-Apim-Subscription-Key: <subscription-key>' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "jsonrpc": "2.0",
+    "id": 2,
+    "method": "tools/list",
+    "params": {}
+  }'
+```
+
+
+#### GitHub Copilot での設定と利用
+
+**1. MCP サーバーの追加設定**
+
+- VS Code でコマンドパレットを開く
+  - macOS: Cmd + Shift + P
+  - Windows/Linux: Ctrl + Shift + P
+- 「MCP: Add Server」コマンドを実行
+
+**2. ワークスペース設定ファイル (`.vscode/mcp.json`) の作成**
 
 ```json
 {
-  "name": "My MCP Server",
-  "type": "remote",
-  "url": "https://my-api-management-instance.azure-api.net/my-mcp-server/mcp",
-  "transport": "streamable-http",
-  "headers": {
-    "Authorization": "Bearer <your-token>"
+  "servers": {
+    "phoneappli-mcp-server": {
+      "type": "http",
+      "url": "https://<apim-service-name>.azure-api.net/<api-name>-mcp/mcp",
+      "headers": {
+        "Ocp-Apim-Subscription-Key": "<subscription-key>"
+      }
+    }
   }
 }
 ```
 
-### ステップ 4: 動作確認とテスト
+**3. 環境変数を使用したセキュアな設定**
 
-#### GitHub Copilot での利用
+```json
+{
+  "servers": {
+    "phoneappli-mcp-server": {
+      "type": "http",
+      "url": "https://<apim-service-name>.azure-api.net/<api-name>-mcp/mcp",
+      "headers": {
+        "Ocp-Apim-Subscription-Key": "${MCP_SUBSCRIPTION_KEY}"
+      }
+    }
+  }
+}
+```
+
+**4. GitHub Copilot でのツール利用**
 
 1. **エージェントモードの開始**
    - GitHub Copilot チャットを開く
@@ -246,15 +263,44 @@ https://portal.azure.com
    - 「Continue」を選択して結果を確認
    - エージェントが MCP サーバーを呼び出し、結果をチャットで表示
 
-#### 直接テスト（curl）
+#### Claude Desktop での設定と利用
 
-```bash
-# ヘルスチェック例
-curl -X GET \
-  'https://<apim-service-name>.azure-api.net/<api-name>-mcp/mcp' \
-  -H 'Ocp-Apim-Subscription-Key: <subscription-key>' \
-  -H 'Content-Type: application/json'
+**1. Claude Desktop 設定ファイルの場所**
+
+- **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+- **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+
+**2. 設定ファイルの作成/編集**
+
+```json
+{
+  "mcpServers": {
+    "phoneappli-api-server": {
+      "command": "npx",
+      "args": [
+        "mcp-remote",
+        "https://<apim-service-name>.azure-api.net/<api-name>-mcp/mcp",
+        "--header",
+        "Ocp-Apim-Subscription-Key: <subscription-key>"
+      ]
+    }
+  }
+}
 ```
+
+**3. Claude Desktop での利用**
+
+1. **Claude Desktop を再起動**
+   - 設定ファイルを保存後、Claude Desktop を完全に終了
+   - アプリケーションを再起動して設定を反映
+
+2. **MCP サーバーの確認**
+   - Claude で以下のメッセージを送信して確認
+   ```
+   利用可能なツールを教えてください
+   ```
+3. **ツールの実行**
+
 
 ## トラブルシューティング
 
