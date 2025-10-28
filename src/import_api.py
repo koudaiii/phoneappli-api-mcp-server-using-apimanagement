@@ -75,6 +75,7 @@ def import_api_to_apim(
     openapi_spec_path: Path,
     api_id: str = "phoneappli-api",
     api_path: str = "phoneappli",
+    environment: str = "sandbox",
 ) -> bool:
     """
     Import OpenAPI specification to Azure API Management.
@@ -85,11 +86,24 @@ def import_api_to_apim(
         openapi_spec_path: Path to OpenAPI spec file
         api_id: API identifier in APIM (default: phoneappli-api)
         api_path: API path in gateway URL (default: phoneappli)
+        environment: Target environment - 'sandbox' or 'production' (default: sandbox)
 
     Returns:
         True if import succeeds, False otherwise
     """
     try:
+        # Map environment to backend URL
+        environment_urls = {
+            "sandbox": "https://api-sandbox.phoneappli.net/v1",
+            "production": "https://api.phoneappli.net/v1",
+        }
+
+        if environment not in environment_urls:
+            console.print(f"[red]Error:[/red] Invalid environment '{environment}'. Must be 'sandbox' or 'production'")
+            return False
+
+        service_url = environment_urls[environment]
+
         # Get Azure subscription ID
         with Progress(
             SpinnerColumn(),
@@ -126,7 +140,7 @@ def import_api_to_apim(
         api_params = ApiCreateOrUpdateParameter(
             display_name=api_info["title"],
             description=api_info["description"],
-            service_url="https://api.phoneappli.net/v1",  # Backend URL from OpenAPI spec
+            service_url=service_url,
             path=api_path,
             protocols=[Protocol.HTTPS],
             api_type=ApiType.HTTP,
@@ -139,7 +153,9 @@ def import_api_to_apim(
         console.print(f"[cyan]Importing API to API Management:[/cyan] {apim_name}")
         console.print(f"  Resource Group: {resource_group}")
         console.print(f"  API ID: {api_id}")
-        console.print(f"  API Path: /{api_path}\n")
+        console.print(f"  API Path: /{api_path}")
+        console.print(f"  Environment: {environment}")
+        console.print(f"  Backend URL: {service_url}\n")
 
         with Progress(
             SpinnerColumn(),
@@ -164,7 +180,10 @@ def import_api_to_apim(
                 f"  Name: {result.display_name}\n"
                 f"  Version: {api_info['version']}\n"
                 f"  Path: /{result.path}\n"
-                f"  API ID: {result.name}\n\n"
+                f"  API ID: {result.name}\n"
+                f"  Environment: {environment}\n\n"
+                f"[cyan]Backend URL:[/cyan]\n"
+                f"  {service_url}\n\n"
                 f"[cyan]Gateway URL:[/cyan]\n"
                 f"  https://{apim_name}.azure-api.net/{result.path}",
                 title="Import Result",
@@ -203,6 +222,13 @@ def main() -> int:
     parser.add_argument("--openapi-spec", "-s", required=True, help="Path to OpenAPI specification file")
     parser.add_argument("--api-id", default="phoneappli-api", help="API identifier (default: phoneappli-api)")
     parser.add_argument("--api-path", default="phoneappli", help="API path (default: phoneappli)")
+    parser.add_argument(
+        "--environment",
+        "-e",
+        choices=["sandbox", "production"],
+        default="sandbox",
+        help="Target environment: 'sandbox' or 'production' (default: sandbox)",
+    )
 
     args = parser.parse_args()
 
@@ -221,6 +247,7 @@ def main() -> int:
         openapi_spec_path=openapi_spec_path,
         api_id=args.api_id,
         api_path=args.api_path,
+        environment=args.environment,
     ):
         return 0
     else:

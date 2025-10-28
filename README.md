@@ -69,8 +69,17 @@ Operations: 120
 
 環境変数でカスタマイズ可能:
 ```bash
-export RESOURCE_GROUP="my-custom-rg"
+# デフォルト（サンドボックス環境）
+./script/deploy
+
+# 本番環境へのデプロイ
+export ENVIRONMENT="production"
+./script/deploy
+
+# その他のカスタマイズ
 export LOCATION="eastus"
+export DEPLOYMENT_NAME="my-custom-deployment"
+export ENVIRONMENT="production"
 ./script/deploy
 ```
 
@@ -127,7 +136,21 @@ uv run python src/import_api.py \
   --apim-name "my-apim-instance" \  # または -n (必須)
   --openapi-spec "docs/v1.20.0.yaml" \  # または -s (必須)
   --api-id "phoneappli-api" \       # オプション (デフォルト: phoneappli-api)
-  --api-path "phoneappli"           # オプション (デフォルト: phoneappli)
+  --api-path "phoneappli" \         # オプション (デフォルト: phoneappli)
+  --environment "sandbox"           # または -e (オプション: sandbox/production, デフォルト: sandbox)
+```
+
+環境オプション:
+- `sandbox`: サンドボックス環境 (`https://api-sandbox.phoneappli.net/v1`) - デフォルト
+- `production`: 本番環境 (`https://api.phoneappli.net/v1`)
+
+本番環境へのインポート例:
+```bash
+uv run python src/import_api.py \
+  -g "my-rg" \
+  -n "my-apim-instance" \
+  -s "docs/v1.20.0.yaml" \
+  -e "production"
 ```
 
 出力例:
@@ -145,6 +168,8 @@ Importing API to API Management: my-apim-instance
   Resource Group: my-rg
   API ID: phoneappli-api
   API Path: /phoneappli
+  Environment: sandbox
+  Backend URL: https://api-sandbox.phoneappli.net/v1
 
 ╭─ Import Result ─────────────────────────╮
 │ ✓ API imported successfully!            │
@@ -154,6 +179,10 @@ Importing API to API Management: my-apim-instance
 │   Version: 1.20                          │
 │   Path: /phoneappli                      │
 │   API ID: phoneappli-api                 │
+│   Environment: sandbox                   │
+│                                          │
+│ Backend URL:                             │
+│   https://api-sandbox.phoneappli.net/v1 │
 │                                          │
 │ Gateway URL:                             │
 │   https://my-apim-instance.azure-api... │
@@ -191,9 +220,9 @@ az deployment group create \
 
 | 変数名 | 説明 | デフォルト値 |
 |-------|------|------------|
-| `RESOURCE_GROUP` | Azure リソースグループ名 | `phoneappli-api-mcp-rg` |
+| `DEPLOYMENT_NAME` | デプロイメント名（リソースグループ名としても使用） | `phoneappli-api-mcp-{timestamp}` |
 | `LOCATION` | デプロイ先のリージョン | `japaneast` |
-| `DEPLOYMENT_NAME` | デプロイメント名 | `phoneappli-api-mcp-{timestamp}` |
+| `ENVIRONMENT` | ターゲット環境（`sandbox` または `production`） | `sandbox` |
 
 ## トラブルシューティング
 
