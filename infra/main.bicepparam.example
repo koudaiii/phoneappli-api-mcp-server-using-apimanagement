@@ -1,0 +1,20 @@
+using './main.bicep'
+
+// API Management Service Name
+// Note: Must be globally unique, 1-50 characters, alphanumerics and hyphens
+param apimServiceName = 'phoneappli-api-${uniqueString(resourceGroup().id)}'
+
+// Location
+param location = 'japaneast'
+
+// Publisher Information
+// TODO: Replace with your actual email and organization name
+param publisherEmail = 'admin@example.com'
+param publisherName = 'PhoneAppli API Organization'
+
+// Tags
+param tags = {
+  project: 'phoneappli-api-mcp-server'
+  managedBy: 'bicep'
+  cost-center: 'engineering'
+}
