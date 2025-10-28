@@ -24,75 +24,27 @@ var defaultTags = {
 
 var allTags = union(defaultTags, tags)
 
-// Module: API Management Service using Azure Verified Module (AVM)
-module apimService 'br/public:avm/res/api-management/service:0.9.0' = {
-  name: 'apim-deployment'
+// Module: Deploy resources
+module resources './resources.bicep' = {
+  name: 'resources-deployment'
   params: {
-    name: apimServiceName
+    apimServiceName: apimServiceName
     location: location
-    tags: allTags
-
-    // SKU Configuration for Basic v2
-    sku: 'BasicV2'
-    skuCapacity: 1
-
-    // Publisher information
     publisherEmail: publisherEmail
     publisherName: publisherName
-
-    // Additional settings
-    enableClientCertificate: false
-    disableGateway: false
-
-    // Managed Identity
-    managedIdentities: {
-      systemAssigned: true
-    }
-
-    // API settings
-    policies: [
-      {
-        format: 'xml'
-        value: '''
-          <policies>
-            <inbound>
-              <cors allow-credentials="false">
-                <allowed-origins>
-                  <origin>*</origin>
-                </allowed-origins>
-                <allowed-methods>
-                  <method>GET</method>
-                  <method>POST</method>
-                  <method>PUT</method>
-                  <method>PATCH</method>
-                  <method>DELETE</method>
-                </allowed-methods>
-                <allowed-headers>
-                  <header>*</header>
-                </allowed-headers>
-              </cors>
-            </inbound>
-            <backend>
-              <forward-request />
-            </backend>
-            <outbound />
-            <on-error />
-          </policies>
-        '''
-      }
-    ]
+    tags: allTags
   }
 }
 
 // Outputs
 @description('The name of the API Management service')
-output apimServiceName string = apimService.outputs.name
+output apimServiceName string = resources.outputs.apimServiceName
 
 @description('The resource ID of the API Management service')
-output apimResourceId string = apimService.outputs.resourceId
+output apimResourceId string = resources.outputs.apimResourceId
 
 @description('The gateway URL of the API Management service')
-output apimGatewayUrl string = 'https://${apimService.outputs.name}.azure-api.net'
+output apimGatewayUrl string = resources.outputs.apimGatewayUrl
 
 @description('The system assigned principal ID')
-output systemAssignedPrincipalId string = apimService.outputs.?systemAssignedMIPrincipalId ?? ''
+output systemAssignedPrincipalId string = resources.outputs.systemAssignedPrincipalId
