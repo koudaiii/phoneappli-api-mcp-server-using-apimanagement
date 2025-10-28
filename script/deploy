@@ -12,9 +12,10 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
 # Default values
-RESOURCE_GROUP="${RESOURCE_GROUP:-phoneappli-api-mcp-rg}"
 LOCATION="${LOCATION:-japaneast}"
 DEPLOYMENT_NAME="${DEPLOYMENT_NAME:-phoneappli-api-mcp-$(date +%Y%m%d-%H%M%S)}"
+# Use deployment name as resource group name
+RESOURCE_GROUP="${DEPLOYMENT_NAME}"
 
 echo "==> Deploying PhoneAppli API MCP Server..."
 echo ""
