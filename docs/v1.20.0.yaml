@@ -85,6 +85,28 @@ paths:
         - ソート順の指定（氏名カナ、ソートスコア、社員番号）
         - ユーザータイプでの絞り込み
 
+        パラメータ:
+        必須パラメータ:
+        - なし
+
+        オプションパラメータ:
+        - page (integer): 取得対象ページの番号 (デフォルト: 0, 最小: 0)
+        - pageSize (integer): 1ページあたりの件数 (デフォルト: 30, 最小: 1, 最大: 100)
+        - select (array[string]): 取得対象項目（権限範囲の項目のみ指定可能）
+        - orderBy (string): ソート順 (fullname/sortScore/employeeNum, デフォルト: fullname)
+        - orderDirection (string): ソート方向 (asc/desc, デフォルト: asc)
+        - userType (string): ユーザタイプ (REGULAR_USER/REGISTRATION_ONLY_USER/FACILITY)
+        - fullname (string): 氏名（部分一致, 最大50文字）
+        - fullnameKana (string): 氏名カナ（部分一致, 最大50文字）
+        - divisionIds (array[integer]): 部署識別番号（最大50件）
+        - includeSubDepartment (boolean): 配下の部署を含む (デフォルト: false)
+        - userIds (array[integer]): ユーザ識別番号（最大50件）
+        - loginIds (array[string]): ログインID（完全一致, 最大50件）
+        - employeeNum (string): 社員番号（完全一致, 最大50文字）
+        - phoneNum (string): 電話番号（最大50文字）
+        - email1 (string): メールアドレス1（完全一致, 最大256文字）
+        - freeWords (array[string]): フリーワード（カンマ区切りでAND検索, 最大10件, 各最大50文字）
+
         取得できるデータ:
         - ユーザー識別番号、ログインID、社員番号
         - 氏名、氏名カナ、氏名英字
