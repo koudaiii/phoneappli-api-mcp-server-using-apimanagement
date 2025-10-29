@@ -5305,7 +5305,29 @@ paths:
   /permissions:
     get:
       summary: 権限取得
-      description: 自身と API キーの権限の情報を取得できます。
+      description: |
+        ツール名: Get Permissions
+        説明: 自身とAPIキーの権限情報を取得します。
+
+        機能:
+        - 自分の権限情報の確認
+        - APIキーの権限スコープの確認
+
+        取得できるデータ:
+        - ユーザー権限（管理者権限等）
+        - APIキーの権限スコープ
+
+        用途:
+        - 権限の確認
+        - アクセス可能な機能の判定
+
+        制限:
+        - APIキーごとのレート制限適用
+
+        例:
+        ```
+        GET /permissions
+        ```
       operationId: PermissionsGet
       tags:
         - 権限
