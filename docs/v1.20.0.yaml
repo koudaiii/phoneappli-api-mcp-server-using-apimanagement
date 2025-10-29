@@ -823,6 +823,41 @@ paths:
         - 各種連携サービス（Microsoft 365、Google Workspace、PBXなど）の設定
         - 権限コントロールの付与
 
+        パラメータ:
+        必須パラメータ（リクエストボディ）:
+        - loginId (string): ログインID（最大254文字）
+        - fullname (string): 氏名（最大50文字、空白のみ不可）
+        - password (string): パスワード（基本利用ユーザーの場合必須、最大50文字、空白のみ不可）
+
+        オプションパラメータ（リクエストボディ）:
+        - userType (string): ユーザタイプ (REGULAR_USER/REGISTRATION_ONLY_USER/FACILITY)
+        - enabled (boolean): アカウント有効/無効
+        - forceLocalAuthentication (boolean): ローカル認証のみに制限
+        - deviceId (string): 端末ID（最大8文字）
+        - deviceIdAcceptInitialize (boolean): 端末ID初回認証
+        - initialPasswordForceChange (boolean): 初期パスワード変更 (デフォルト: false)
+        - sortScore (integer): ソートスコア (0-999999999)
+        - level (integer): レベル (1-10, デフォルト: 5)
+        - fullnameKana (string): 氏名カナ（最大50文字）
+        - fullnameAlphabet (string): 氏名英字（最大50文字）
+        - employeeNum (string): 社員番号（最大50文字）
+        - position (string): 役職（最大100文字）
+        - positionAlphabet (string): 役職英字（最大100文字）
+        - post (string): 職務（最大50文字）
+        - divisionIds (array[integer]): 部署識別番号（最大50件）
+        - extensionNum (string): 内線番号（最大50文字）
+        - companyMobileNum (string): 会社携帯番号（最大50文字）
+        - personalMobileNum (string): 個人携帯番号（最大50文字）
+        - phoneNum (string): 電話番号（最大50文字）
+        - mobileNum (string): 携帯番号（最大50文字）
+        - faxNum (string): FAX番号（最大50文字）
+        - email1 (string): メールアドレス1（最大256文字）
+        - email2 (string): メールアドレス2（最大256文字）
+        - webUrl (string): WEB URL（最大256文字）
+        - groupware (string): グループウェア連携 (M365/GWS/NONE, デフォルト: M365)
+        - roles (array[string]): 権限コントロール
+        - paapiAvailable (boolean): API利用権限
+
         取得できるデータ:
         - 作成されたユーザーの全情報（ユーザー識別番号を含む）
 
