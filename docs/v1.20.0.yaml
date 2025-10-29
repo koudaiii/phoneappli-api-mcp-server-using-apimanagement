@@ -1439,6 +1439,22 @@ paths:
         - 連絡先情報の更新
         - アカウント設定の変更
 
+        パラメータ:
+        必須パラメータ（パス）:
+        - userId (integer): ユーザ識別番号
+
+        必須パラメータ（リクエストボディ）:
+        - なし（すべてオプション）
+
+        オプションパラメータ（リクエストボディ）:
+        - userType (string): ユーザタイプ (REGULAR_USER/REGISTRATION_ONLY_USER/FACILITY)
+        - enabled (boolean): アカウント有効/無効
+        - password (string): パスワード（最大50文字）
+        - fullname (string): 氏名（最大50文字）
+        - divisionIds (array[integer]): 部署識別番号（最大50件）
+        - email1 (string): メールアドレス1（最大256文字）
+        - その他POSTと同様の全フィールドが指定可能
+
         取得できるデータ:
         - 更新後のユーザー全情報
 
