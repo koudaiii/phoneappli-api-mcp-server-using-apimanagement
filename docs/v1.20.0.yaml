@@ -791,8 +791,45 @@ paths:
     post:
       summary: 社内連絡先作成
       description: |
-        社内連絡先（ユーザ）を作成できます。  
-        ※ ご利用にはユーザ管理権限が必要です。
+        ツール名: Create Internal Contact
+        説明: 新しい社内連絡先（ユーザ）を作成します。
+
+        機能:
+        - 基本利用ユーザー、登録限定ユーザー、施設・備品の3タイプに対応
+        - ログインID、パスワード、氏名などの必須項目設定
+        - 部署割り当て、役職設定
+        - 各種連携サービス（Microsoft 365、Google Workspace、PBXなど）の設定
+        - 権限コントロールの付与
+
+        取得できるデータ:
+        - 作成されたユーザーの全情報（ユーザー識別番号を含む）
+
+        用途:
+        - 新入社員のアカウント作成
+        - 一括ユーザー登録の自動化
+        - 外部システムとの連携によるユーザープロビジョニング
+        - 施設・備品の登録
+
+        制限:
+        - ユーザ管理権限が必要
+        - ユーザタイプによって設定可能な項目が異なる
+        - 基本利用ユーザーはパスワード必須
+        - 同一ログインIDは登録不可
+        - APIキーごとのレート制限適用
+
+        例:
+        ```json
+        {
+          "userType": "REGULAR_USER",
+          "loginId": "yamada.taro",
+          "password": "SecurePassword123",
+          "fullname": "山田 太郎",
+          "fullnameKana": "ヤマダ タロウ",
+          "email1": "yamada.taro@example.com",
+          "divisionIds": [123],
+          "enabled": true
+        }
+        ```
       operationId: UsersPost
       tags:
         - 社内連絡先
