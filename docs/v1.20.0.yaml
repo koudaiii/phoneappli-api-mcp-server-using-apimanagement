@@ -5,62 +5,41 @@ info:
     url: https://developer.phoneappli.net/api/images/logo.png
     altText: PHONE APPLI
   description: |
-    # はじめに
-    PHONE APPLI API は外部アプリケーションから PHONE APPLI PEOPLE（以下：PA PEOPLE）のデータ入出力などを行うことができるプログラミングインターフェイスです。DX 推進や業務改革にぜひご活用ください。
-    ## 利用規約
-    本 API を利用することにより、[API 利用規約 ](https://phoneappli.net/product/agreement/pa_api/)に同意したものとします。ご利用の前に必ずお読みください。
+    # PHONE APPLI API MCP Server
 
-    # API キーの発行方法
-    PHONE APPLI API のご利用には API キーが必要です。  
-    PC ブラウザ版 PA PEOPLE のメニュー［ユーザ情報］を開き、［APIキー］タブから発行、取得できます。  
-    必要な権限範囲は 各 API の AUTHORIZATIONS をご確認ください。  
-    ※ PHONE APPLI API が有効化されていない環境では、API キー発行画面は表示されません。
+    This MCP (Model Context Protocol) server provides access to PHONE APPLI PEOPLE APIs through Azure API Management.
+    It enables AI assistants to interact with organizational contact data, user profiles, departments, and communication history.
 
-    # 制限事項
-    ## レート制限
-    - トークンバケットアルゴリズムを用いて API キーごとのリクエスト数に上限を設けています。  
-    - 現在のリクエスト制限の詳細はレスポンスヘッダから確認することができます。  
-    - システムの負荷状況に応じて、リクエスト数の上限が変動する可能性があります。  
-    - リクエスト上限超過時のエラーついては[ エラーレスポンス ](#section/エラーレスポンス)を参照してください。　　
-    - 一部 API では、こちらのレート制限とは別にテナントごとのリクエスト数に上限を設けています。
+    ## Key Features
 
-    #### レスポンスヘッダ
-    レスポンスヘッダ内には以下が含まれます。
-    | ヘッダ名 | 説明 |
-    | -- | -- |
-    | x-ratelimit-remaining | トークン残量 |
-    | x-ratelimit-requested-tokens | リクエストの処理に使用したトークンの個数 |
-    | x-ratelimit-burst-capacity | バケットが保持できるトークンの個数 |
-    | x-ratelimit-replenish-rate | 1秒間に補充されるトークンの個数 |
+    - **User Management**: Search, retrieve, create, update, and delete internal contacts (users)
+    - **Profile Management**: Access and edit user profiles including skills, qualifications, and work history
+    - **Department Management**: Manage organizational structure and department information
+    - **Contact Management**: Handle both internal and external contact information
+    - **Communication History**: Access call logs and communication records
+    - **Location Services**: Integration with PHONE APPLI PLACE for location tracking (if enabled)
 
-    ## 利用権限
-    API キー発行元のユーザが持つ閲覧・編集の権限範囲内で利用できます。
+    ## Authentication
 
-    ## キーの発行数制限
-    1ユーザあたり同時に10個まで発行できます。
+    This API requires an API key for authentication. The key must be passed in the `X-Pa-Api-Key` header.
+    - API keys can be issued from the PC browser version of PA PEOPLE under User Information > API Key tab
+    - Each user can have up to 10 active API keys simultaneously
+    - API access is limited to the permissions and data scope of the user who issued the key
 
-    # エラーレスポンス
-    エラー発生時には以下表の HTTP ステータスコードとステータスを返します。ステータスは JSON 形式のエラーオブジェクトに含まれます。例外として、HTML 形式のエラーページを返す場合があります。
+    ## Important Limitations
 
-    | コード | ステータス | 説明 |
-    | -- | -- | -- |
-    | 400 | INVALID_ARGUMENT | リクエストの構文が正しくない場合 |
-    | 401 | UNAUTHENTICATED | 認証情報が不足している場合 |
-    | 403 | RESOURCE_PERMISSION_DENIED | 対象リソースが権限範囲外である場合 |
-    | 403 | API_PERMISSION_DENIED | 対象APIが権限範囲外である場合 |
-    | 403 | ACCESS_DENIED | IPアドレスが制限されている場合 |
-    | 403 | PROFILE_ITEM_NOT_EDITABLE | 対象プロフィール項目が編集不可に設定されている場合 |
-    | 404 | NOT_FOUND | 対象リソースが存在しない場合 |
-    | 405 | METHOD_NOT_ALLOWED | リクエストメソッドが受け入れられない場合 |
-    | 406 | NOT_ACCEPTABLE | 指定されたデータ形式で応答できない場合 |
-    | 409 | CONFLICT | リクエストがサーバーの状態と競合している場合 |
-    | 409 | ALREADY_EXISTS | 既存のリソースと重複する場合 |
-    | 413 | PAYLOAD_TOO_LARGE | リクエストされたデータサイズが上限を超えている場合 |
-    | 415 | UNSUPPORTED_MEDIA_TYPE | データ形式が受け入れられない場合 |
-    | 422 | UNPROCESSABLE | リクエストの構文は正しいが、指示が実行できない場合 |
-    | 429 | - | リクエスト回数が上限を超えている場合 |
-    | 500 | INTERNAL_SERVER_ERROR | 内部エラーが発生している場合 |
-    | 503 | SERVICE_UNAVAILABLE | サーバーがダウンしている場合 |
+    - **Rate Limiting**: Token bucket algorithm is applied per API key. Rate limit details are returned in response headers (`x-ratelimit-*`)
+    - **Permission Scope**: Only data within the API key owner's permission scope can be accessed
+    - **User Type Restrictions**: Some fields have restrictions based on user type (REGULAR_USER, REGISTRATION_ONLY_USER, FACILITY)
+
+    ## Environment
+
+    - **Production**: https://api.phoneappli.net/v1
+    - **Sandbox**: https://api-sandbox.phoneappli.net/v1
+
+    ## Terms of Service
+
+    By using this API, you agree to the [PHONE APPLI API Terms of Service](https://phoneappli.net/product/agreement/pa_api/)
   version: '1.20'
   contact:
     name: PHONE APPLI
