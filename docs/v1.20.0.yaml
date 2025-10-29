@@ -2334,7 +2334,34 @@ paths:
   /divisions:
     get:
       summary: 部署一覧取得
-      description: 部署の情報を一覧で取得できます。
+      description: |
+        ツール名: List Divisions
+        説明: 部署の情報を一覧で取得します。
+
+        機能:
+        - 全部署情報の取得
+        - ページネーション対応
+        - ソート順の指定
+
+        取得できるデータ:
+        - 部署識別番号、部署名、部署名英字
+        - 部署階層情報
+        - 親部署ID
+        - ソートスコア
+
+        用途:
+        - 組織図の作成
+        - 部署一覧の表示
+        - 部署マスターデータの取得
+
+        制限:
+        - 1ページあたり最大100件
+        - APIキーごとのレート制限適用
+
+        例:
+        ```
+        GET /divisions?page=0&pageSize=50&orderBy=divisionName
+        ```
       operationId: DivisionsGet
       tags:
         - 部署
