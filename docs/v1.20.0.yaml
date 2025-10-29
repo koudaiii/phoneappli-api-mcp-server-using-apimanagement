@@ -2549,7 +2549,30 @@ paths:
   /divisions/{divisionId}:
     get:
       summary: 部署取得
-      description: 部署の情報を取得できます。
+      description: |
+        ツール名: Get Division
+        説明: 指定した部署の情報を取得します。
+
+        機能:
+        - 特定部署の詳細情報取得
+        - 部署階層情報の取得
+
+        取得できるデータ:
+        - 部署識別番号、部署名、部署名英字
+        - 親部署ID
+        - ソートスコア
+
+        用途:
+        - 特定部署の詳細確認
+        - 部署階層の確認
+
+        制限:
+        - APIキーごとのレート制限適用
+
+        例:
+        ```
+        GET /divisions/123
+        ```
       operationId: DivisionsDivisionIdGet
       tags:
         - 部署
