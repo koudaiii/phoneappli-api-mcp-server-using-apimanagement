@@ -2705,8 +2705,36 @@ paths:
     patch:
       summary: 行き先一括編集
       description: |
-        ユーザごとの行き先を一括して編集できます。  
-        ※ ご利用にはユーザ管理権限が必要です。
+        ツール名: Update Destinations
+        説明: 行き先情報を一括編集します。
+
+        機能:
+        - 複数ユーザーの行き先を一括更新
+        - 行き先タイプの設定
+        - 行き先メモの設定
+
+        取得できるデータ:
+        - なし（204 No Content）
+
+        用途:
+        - 外出・会議中などの状態管理
+        - 在席管理システムとの連携
+
+        制限:
+        - ユーザ管理権限が必要
+        - 最大100件まで一括更新可能
+        - APIキーごとのレート制限適用
+
+        例:
+        ```json
+        [
+          {
+            "userId": 123,
+            "destinationType": "OUT_OF_OFFICE",
+            "destinationMemo": "外出中"
+          }
+        ]
+        ```
       operationId: DestinationsPatch
       tags:
         - 行き先
