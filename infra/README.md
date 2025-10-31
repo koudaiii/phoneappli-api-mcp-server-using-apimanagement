@@ -40,8 +40,6 @@ infra/
 | パラメータ名 | 説明 | デフォルト値 |
 |------------|------|------------|
 | `tags` | リソースに付与するタグ | `{ project: 'phoneappli-api-mcp-server', ... }` |
-| `environment` | ターゲット環境（`sandbox` または `production`） | `sandbox` |
-| `phoneAppliApiKey` | PHONE APPLI API キー | `''` (空文字列) |
 
 ## デプロイ方法
 
@@ -63,7 +61,6 @@ param publisherName = 'Your Organization Name'
 export PHONEAPPLI_API_KEY="your-api-key"
 
 # 環境変数の設定（オプション）
-export ENVIRONMENT="sandbox"  # または "production"
 export LOCATION="japaneast"
 
 # デプロイ実行
@@ -83,9 +80,7 @@ az deployment group create \
   --name phoneappli-api-mcp-deployment \
   --resource-group phoneappli-api-mcp-rg \
   --template-file main.bicep \
-  --parameters main.bicepparam \
-  --parameters phoneAppliApiKey="${PHONEAPPLI_API_KEY}" \
-  --parameters environment="sandbox"
+  --parameters main.bicepparam
 ```
 
 ## デプロイ後の確認

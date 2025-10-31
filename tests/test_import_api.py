@@ -10,7 +10,6 @@ import pytest
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 from import_api import (
-    generate_api_policy,
     get_api_info_from_spec,
     import_api_to_apim,
     load_openapi_spec,
@@ -80,28 +79,6 @@ paths: {}
         assert result["title"] == "Imported API"
         assert result["version"] == "1.0"
         assert result["description"] == ""
-
-
-class TestGenerateAPIPolicy:
-    """Tests for generate_api_policy function."""
-
-    def test_generate_sandbox_policy(self) -> None:
-        """Test generating policy for sandbox environment."""
-        policy = generate_api_policy("sandbox")
-
-        assert "phoneappli-api-key-sandbox" in policy
-        assert '<set-header name="X-Pa-Api-Key"' in policy
-        assert "<policies>" in policy
-        assert "</policies>" in policy
-
-    def test_generate_production_policy(self) -> None:
-        """Test generating policy for production environment."""
-        policy = generate_api_policy("production")
-
-        assert "phoneappli-api-key-production" in policy
-        assert '<set-header name="X-Pa-Api-Key"' in policy
-        assert "<policies>" in policy
-        assert "</policies>" in policy
 
 
 class TestImportAPIToAPIM:

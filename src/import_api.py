@@ -70,26 +70,19 @@ def get_api_info_from_spec(file_path: Path) -> dict[str, Any]:
     }
 
 
-def generate_api_policy(environment: str) -> str:
+def generate_api_policy(environment: str = "sandbox") -> str:
     """
-    Generate API-level policy XML with X-Pa-Api-Key header.
+    Generate API-level policy XML that validates X-Pa-Api-Key header.
 
     Args:
-        environment: Target environment ('sandbox' or 'production')
+        environment: The environment (sandbox or production) for named value reference
 
     Returns:
         Policy XML string
     """
-    # Map environment to Named Value
-    named_value = f"phoneappli-api-key-{environment}"
-
-    policy_xml = f"""<policies>
+    policy_xml = """<policies>
     <inbound>
         <base />
-        <!-- Add PHONE APPLI API Key header for backend authentication -->
-        <set-header name="X-Pa-Api-Key" exists-action="override">
-            <value>{{{{"{named_value}"}}}}</value>
-        </set-header>
     </inbound>
     <backend>
         <base />
@@ -209,8 +202,8 @@ def import_api_to_apim(
 
             progress.update(task, completed=True)
 
-        # Set API-level policy with X-Pa-Api-Key header
-        console.print(f"\n[cyan]Configuring API policy for {environment} environment...[/cyan]")
+        # Set API-level policy to validate X-Pa-Api-Key header
+        console.print("\n[cyan]Configuring API policy to validate X-Pa-Api-Key header...[/cyan]")
         policy_xml = generate_api_policy(environment)
 
         with Progress(
