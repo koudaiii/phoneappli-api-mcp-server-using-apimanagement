@@ -5806,7 +5806,60 @@ paths:
   /outgoingCallHistories:
     get:
       summary: 発信履歴一覧取得
-      description: 自分の発信履歴を一覧で取得できます。
+      description: |
+        ツール名: List Outgoing Call Histories
+        説明: 自分の発信履歴を一覧で取得します。
+
+        機能:
+        - ページネーションによる大量データの取得
+        - 日時範囲での絞り込み
+        - 発信先情報での検索
+        - ソート順の指定（発信日時順）
+        - 接続状態での絞り込み
+
+        パラメータ:
+        必須パラメータ:
+        - なし
+
+        オプションパラメータ（クエリ）:
+        - page (integer): 取得対象ページの番号 (デフォルト: 0, 最小: 0)
+        - pageSize (integer): 1ページあたりの件数 (デフォルト: 30, 最小: 1, 最大: 100)
+        - orderDirection (string): ソート方向 (asc/desc, デフォルト: desc)
+        - dialedFrom (string): 発信日時 from (YYYY-MM-DDThh:mm:ss.SSSTZD形式)
+        - dialedTo (string): 発信日時 to (YYYY-MM-DDThh:mm:ss.SSSTZD形式)
+        - connected (boolean): 接続済みのみ取得
+        - phoneNum (string): 発信先電話番号（最大50文字）
+
+        取得できるデータ:
+        - 発信履歴識別番号
+        - 発信日時
+        - 発信先電話番号
+        - 発信先情報（氏名、会社名等）
+        - 接続状態
+        - メモ情報
+
+        用途:
+        - 通話履歴の管理
+        - 発信対応状況の確認
+        - 営業活動の分析
+        - 顧客対応履歴の確認
+
+        制限:
+        - 自分の発信履歴のみ取得可能
+        - 1ページあたり最大100件
+        - APIキーごとのレート制限適用
+
+        例:
+        ```
+        # 全発信履歴を取得
+        GET /outgoingCallHistories?page=0&pageSize=30
+
+        # 期間指定で取得
+        GET /outgoingCallHistories?dialedFrom=2024-01-01T00:00:00.000+09:00&dialedTo=2024-12-31T23:59:59.999+09:00
+
+        # 未接続のみ取得
+        GET /outgoingCallHistories?connected=false
+        ```
       operationId: OutgoingCallHistoriesGet
       tags:
         - 履歴
