@@ -5204,7 +5204,41 @@ paths:
   /personalContactsFolders/{folderNum}:
     patch:
       summary: 個人電話帳フォルダ編集
-      description: 個人電話帳フォルダの情報を編集できます。指定した項目のみ変更が反映されます。
+      description: |
+        ツール名: Update Personal Contacts Folder
+        説明: 個人電話帳フォルダの情報を編集します。指定した項目のみ変更が反映されます。
+
+        機能:
+        - フォルダ名の変更
+        - フォルダ設定の部分更新
+
+        パラメータ:
+        必須パラメータ（パス）:
+        - folderNum (integer): 編集対象のフォルダ識別番号
+
+        必須パラメータ（リクエストボディ）:
+        - なし（すべてオプション）
+
+        オプションパラメータ（リクエストボディ）:
+        - folderName (string): フォルダ名（最大100文字）
+
+        取得できるデータ:
+        - 更新後のフォルダ全情報
+
+        用途:
+        - フォルダ名の変更
+        - フォルダ設定の更新
+
+        制限:
+        - 自分の個人電話帳のフォルダのみ編集可能
+        - APIキーごとのレート制限適用
+
+        例:
+        ```json
+        {
+          "folderName": "大学時代の友人"
+        }
+        ```
       operationId: PersonalContactsFolderPatch
       tags:
         - 社外電話帳フォルダ
