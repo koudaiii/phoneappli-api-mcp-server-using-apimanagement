@@ -4236,8 +4236,59 @@ paths:
     get:
       summary: 社外電話帳フォルダ一覧取得
       description: |
-        社外電話帳（共有/個人）のフォルダの情報を一覧で取得できます。  
-        並びは、電話帳タイプ（共有/個人の順）、フォルダ識別番号（昇順）の順です。
+        ツール名: List External Contacts Folders
+        説明: 社外電話帳（共有/個人）のフォルダの情報を一覧で取得します。
+
+        機能:
+        - ページネーションによる大量データの取得
+        - 共有/個人電話帳の選択
+        - フォルダ名での検索
+        - 編集権限のあるフォルダのみに限定
+        - 電話帳タイプ、フォルダ識別番号順でソート
+
+        パラメータ:
+        必須パラメータ:
+        - なし
+
+        オプションパラメータ（クエリ）:
+        - page (integer): 取得対象ページの番号 (デフォルト: 0, 最小: 0)
+        - pageSize (integer): 1ページあたりの件数 (デフォルト: 30, 最小: 1, 最大: 100)
+        - directory (string): 電話帳タイプ (SHARED/PERSONAL)
+        - folderName (string): フォルダ名（部分一致）
+        - editingPrivileges (boolean): 編集権限のある電話帳フォルダのみに限定
+
+        取得できるデータ:
+        - フォルダ識別番号
+        - フォルダ名
+        - 電話帳タイプ（共有/個人）
+        - 権限情報（閲覧/編集）
+        - 登録連絡先数
+
+        用途:
+        - 社外電話帳の構造把握
+        - フォルダ管理
+        - アクセス権限の確認
+        - 連絡先登録先フォルダの選択
+
+        制限:
+        - 閲覧権限があるフォルダのみ取得可能
+        - 1ページあたり最大100件
+        - APIキーごとのレート制限適用
+
+        例:
+        ```
+        # 全フォルダを取得
+        GET /externalContactsFolders?page=0&pageSize=30
+
+        # 共有電話帳のみ取得
+        GET /externalContactsFolders?directory=SHARED
+
+        # 編集権限があるフォルダのみ取得
+        GET /externalContactsFolders?editingPrivileges=true
+
+        # フォルダ名で検索
+        GET /externalContactsFolders?folderName=取引先
+        ```
       operationId: ExternalContactsFoldersGet
       tags:
         - 社外電話帳フォルダ
