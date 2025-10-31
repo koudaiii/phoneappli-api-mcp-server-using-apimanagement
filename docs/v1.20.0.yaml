@@ -3920,7 +3920,59 @@ paths:
   /externalContacts/businessCard:
     post:
       summary: 名刺読み取り
-      description: 名刺画像から社外連絡先を作成できます。
+      description: |
+        ツール名: Create Contact from Business Card
+        説明: 名刺画像をOCR読み取りして社外連絡先を作成します。
+
+        機能:
+        - 名刺画像のOCR読み取り
+        - 自動トリミング機能
+        - 複数名刺の一括分割読み取り（最大21分割）
+        - 共有/個人電話帳への登録
+        - AI読み取り（オプション）
+
+        パラメータ:
+        必須パラメータ（リクエストボディ - multipart/form-data）:
+        - businessCardImage (binary): 名刺画像ファイル（推奨上限: 6MB, 形式: JPEG/PNG/GIF）
+        - directory (string): 登録先の電話帳タイプ (SHARED/PERSONAL)
+        - folderNum (integer): 登録先のフォルダ識別番号（最小: 1）
+
+        オプションパラメータ（リクエストボディ - multipart/form-data）:
+        - autoCrop (boolean): 名刺画像の自動トリミング (デフォルト: false, divideImageと同時指定不可)
+        - divideImage (boolean): 複数の名刺が含まれる画像を分割 (デフォルト: false, 最大21分割)
+        - readerType (string): 読み取り方法 (STANDARD/AI, デフォルト: STANDARD)
+        - comment (string): コメント（最大300文字）
+        - remarks (string): 備考（最大1000文字）
+
+        取得できるデータ:
+        - 作成された社外連絡先情報
+        - OCR読み取り結果
+        - 連絡先識別番号
+
+        用途:
+        - 名刺の自動デジタル化
+        - 営業活動後の連絡先登録の効率化
+        - 紙の名刺から電子データへの変換
+        - 大量の名刺の一括登録
+
+        制限:
+        - 登録権限があるフォルダのみ指定可能
+        - 推奨画像サイズ: 上限6MB
+        - 対応形式: JPEG, PNG, GIF
+        - 分割読み取り: 最大21分割
+        - 分割読み取り時の制約: 名刺が重なっていない、鮮明、背景とのコントラスト十分
+        - APIキーごとのレート制限適用
+
+        例:
+        ```
+        POST /externalContacts/businessCard
+        Content-Type: multipart/form-data
+
+        businessCardImage: [binary data]
+        directory: SHARED
+        folderNum: 100
+        readerType: AI
+        ```
       operationId: BusinessCardPost
       tags:
         - 社外連絡先
