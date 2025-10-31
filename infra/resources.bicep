@@ -16,10 +16,6 @@ param publisherName string
 @description('Tags to apply to all resources')
 param tags object
 
-@description('Environment to deploy (sandbox or production)')
-@allowed(['sandbox', 'production'])
-param environment string
-
 // Module: API Management Service using Azure Verified Module (AVM)
 module apimService 'br/public:avm/res/api-management/service:0.9.0' = {
   name: 'apim-deployment'
