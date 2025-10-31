@@ -41,7 +41,6 @@ infra/
 |------------|------|------------|
 | `tags` | リソースに付与するタグ | `{ project: 'phoneappli-api-mcp-server', ... }` |
 | `environment` | ターゲット環境（`sandbox` または `production`） | `sandbox` |
-| `phoneAppliApiKey` | PHONE APPLI API キー | `''` (空文字列) |
 
 ## デプロイ方法
 
@@ -84,7 +83,6 @@ az deployment group create \
   --resource-group phoneappli-api-mcp-rg \
   --template-file main.bicep \
   --parameters main.bicepparam \
-  --parameters phoneAppliApiKey="${PHONEAPPLI_API_KEY}" \
   --parameters environment="sandbox"
 ```
 
