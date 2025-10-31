@@ -2086,6 +2086,24 @@ paths:
         - 外部リンクの設定
         - カスタマイズ項目の編集
 
+        パラメータ:
+        必須パラメータ（パス）:
+        - userId (integer/string): ユーザ識別番号（または "me" で自分を指定）
+
+        必須パラメータ（リクエストボディ）:
+        - なし（すべてオプション）
+
+        オプションパラメータ（リクエストボディ）:
+        - oneWord (string): ひとこと（最大280文字）
+        - jobDescription (string): 職務概要（最大280文字）
+        - skills (array[string]): スキル（最大20件、各最大100文字）
+        - toolTechnologies (array[string]): ツール&テクノロジー（最大20件、各最大100文字）
+        - qualifications (array[string]): 資格（最大20件、各最大100文字）
+        - briefHistories (array[object]): 略歴（最大30件）
+        - achievementHistories (array[object]): 実績・受賞歴（最大30件）
+        - externalLinks (array[object]): 外部リンク（最大3件）
+        - customColumns (array[object]): カスタマイズ項目（最大3件）
+
         取得できるデータ:
         - 更新後のプロフィール全情報
 
@@ -2282,6 +2300,13 @@ paths:
         - フルサイズまたはサムネイルの選択
         - 自分の写真取得（userId=me指定可能）
 
+        パラメータ:
+        必須パラメータ（パス）:
+        - userId (integer/string): ユーザ識別番号（または "me" で自分を指定）
+
+        オプションパラメータ（クエリ）:
+        - size (string): 画像サイズ (FULL/THUMBNAIL)
+
         取得できるデータ:
         - JPEG形式の画像データ
 
@@ -2436,6 +2461,16 @@ paths:
         - 全部署情報の取得
         - ページネーション対応
         - ソート順の指定
+
+        パラメータ:
+        必須パラメータ:
+        - なし
+
+        オプションパラメータ（クエリ）:
+        - page (integer): 取得対象ページの番号 (デフォルト: 0, 最小: 0)
+        - pageSize (integer): 1ページあたりの件数 (デフォルト: 30, 最小: 1, 最大: 100)
+        - orderBy (string): ソート順 (divisionName/sortScore, デフォルト: divisionName)
+        - orderDirection (string): ソート方向 (asc/desc, デフォルト: asc)
 
         取得できるデータ:
         - 部署識別番号、部署名、部署名英字
@@ -2651,6 +2686,13 @@ paths:
         - 特定部署の詳細情報取得
         - 部署階層情報の取得
 
+        パラメータ:
+        必須パラメータ（パス）:
+        - divisionId (integer): 部署識別番号
+
+        オプションパラメータ:
+        - なし
+
         取得できるデータ:
         - 部署識別番号、部署名、部署名英字
         - 親部署ID
@@ -2806,6 +2848,16 @@ paths:
         - 複数ユーザーの行き先を一括更新
         - 行き先タイプの設定
         - 行き先メモの設定
+
+        パラメータ:
+        必須パラメータ（リクエストボディ）:
+        - array[object]: 行き先情報の配列（最大100件）
+          - userId (integer): ユーザ識別番号
+          - destinationType (string): 行き先タイプ
+          - destinationMemo (string): 行き先メモ（最大100文字）
+
+        オプションパラメータ:
+        - なし
 
         取得できるデータ:
         - なし（204 No Content）
@@ -5406,6 +5458,13 @@ paths:
         機能:
         - 自分の権限情報の確認
         - APIキーの権限スコープの確認
+
+        パラメータ:
+        必須パラメータ:
+        - なし
+
+        オプションパラメータ:
+        - なし
 
         取得できるデータ:
         - ユーザー権限（管理者権限等）
