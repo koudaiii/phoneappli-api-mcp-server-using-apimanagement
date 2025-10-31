@@ -76,7 +76,7 @@ def count_description_lengths(spec_file: str):
     # YAML ファイルを UTF-8 エンコーディングで読み込み
     # safe_load() を使用してセキュアに解析
     try:
-        with open(spec_file, 'r', encoding='utf-8') as f:
+        with open(spec_file, "r", encoding="utf-8") as f:
             spec = yaml.safe_load(f)
     except FileNotFoundError:
         print(f"エラー: ファイル '{spec_file}' が見つかりません")
@@ -92,42 +92,44 @@ def count_description_lengths(spec_file: str):
     endpoints = []
 
     # OpenAPI仕様の基本構造チェック
-    if 'paths' not in spec:
+    if "paths" not in spec:
         print("エラー: OpenAPI 仕様に 'paths' セクションが見つかりません")
         return
 
     # 全パスとHTTPメソッドを走査
-    for path, path_item in spec['paths'].items():
+    for path, path_item in spec["paths"].items():
         # サポートする HTTP メソッド一覧
         # OpenAPI 3.0 で定義されている標準メソッド
-        supported_methods = ['get', 'post', 'put', 'patch', 'delete', 'options', 'head', 'trace']
+        supported_methods = ["get", "post", "put", "patch", "delete", "options", "head", "trace"]
 
         for method in supported_methods:
             if method in path_item:
                 operation = path_item[method]
 
                 # 各フィールドを安全に取得（存在しない場合は空文字）
-                description = operation.get('description', '')
-                summary = operation.get('summary', '')
-                operation_id = operation.get('operationId', '')
+                description = operation.get("description", "")
+                summary = operation.get("summary", "")
+                operation_id = operation.get("operationId", "")
 
                 # 文字数をカウント（Unicode文字も正確にカウント）
                 desc_length = len(description)
 
                 # エンドポイント情報を辞書として保存
-                endpoints.append({
-                    'method': method.upper(),          # HTTPメソッドを大文字で統一
-                    'path': path,                      # APIパス
-                    'operation_id': operation_id,      # 操作ID
-                    'summary': summary,                # 要約
-                    'description_length': desc_length, # 記述文字数
-                    'description': description,        # 記述内容（全文）
-                    'exceeds_1000': desc_length > 1000 # 1000文字超過フラグ
-                })
+                endpoints.append(
+                    {
+                        "method": method.upper(),  # HTTPメソッドを大文字で統一
+                        "path": path,  # APIパス
+                        "operation_id": operation_id,  # 操作ID
+                        "summary": summary,  # 要約
+                        "description_length": desc_length,  # 記述文字数
+                        "description": description,  # 記述内容（全文）
+                        "exceeds_1000": desc_length > 1000,  # 1000文字超過フラグ
+                    }
+                )
 
     # 記述文字数の降順でソート
     # lambda関数でdescription_lengthをキーとして使用
-    endpoints.sort(key=lambda x: x['description_length'], reverse=True)
+    endpoints.sort(key=lambda x: x["description_length"], reverse=True)
 
     # === 結果表示部分 ===
 
@@ -140,24 +142,24 @@ def count_description_lengths(spec_file: str):
 
     # 統計情報の計算と表示
     total_endpoints = len(endpoints)
-    exceeding_endpoints = [ep for ep in endpoints if ep['exceeds_1000']]  # 1000文字超過エンドポイントをフィルタ
+    exceeding_endpoints = [ep for ep in endpoints if ep["exceeds_1000"]]  # 1000文字超過エンドポイントをフィルタ
     exceeding_count = len(exceeding_endpoints)
 
     print("📊 統計情報:")
     print(f"  📝 総エンドポイント数: {total_endpoints}")
     print(f"  ⚠️  1000文字超過: {exceeding_count} 個")
     if exceeding_count > 0:
-        print(f"     超過率: {exceeding_count/total_endpoints*100:.1f}%")
+        print(f"     超過率: {exceeding_count / total_endpoints * 100:.1f}%")
 
     # 最大・最小文字数の表示（エンドポイントが存在する場合のみ）
     if endpoints:
-        max_length = endpoints[0]['description_length']  # ソート済みなので最初が最大
-        min_length = endpoints[-1]['description_length'] # 最後が最小
+        max_length = endpoints[0]["description_length"]  # ソート済みなので最初が最大
+        min_length = endpoints[-1]["description_length"]  # 最後が最小
         print(f"  📏 最大記述文字数: {max_length}")
         print(f"  📏 最小記述文字数: {min_length}")
 
         # 平均文字数も計算
-        avg_length = sum(ep['description_length'] for ep in endpoints) / total_endpoints
+        avg_length = sum(ep["description_length"] for ep in endpoints) / total_endpoints
         print(f"  📏 平均記述文字数: {avg_length:.1f}")
     print()
 
@@ -168,10 +170,10 @@ def count_description_lengths(spec_file: str):
 
     for ep in endpoints:
         # 1000文字超過の場合は警告アイコン、そうでなければOKアイコン
-        status = "⚠️ EXCEEDS" if ep['exceeds_1000'] else "✅ OK"
+        status = "⚠️ EXCEEDS" if ep["exceeds_1000"] else "✅ OK"
 
         # summaryが長い場合は省略表示（30文字制限）
-        summary_short = (ep['summary'][:27] + '...') if len(ep['summary']) > 30 else ep['summary']
+        summary_short = (ep["summary"][:27] + "...") if len(ep["summary"]) > 30 else ep["summary"]
 
         # テーブル行を整形して表示
         print(f"{ep['method']:<8} {ep['path']:<40} {ep['description_length']:>8} {status:<12} {summary_short:<30}")
@@ -196,12 +198,12 @@ def count_description_lengths(spec_file: str):
 
             # 記述内容の先頭200文字をプレビュー表示
             print("   📄 記述内容プレビュー（先頭200文字）:")
-            preview = ep['description'][:200]
+            preview = ep["description"][:200]
             # 改行を含む場合は適切にインデント
-            preview_lines = preview.split('\n')
+            preview_lines = preview.split("\n")
             for line in preview_lines:
                 print(f"   {line}")
-            if len(ep['description']) > 200:
+            if len(ep["description"]) > 200:
                 print("   ...")
             print()
             print("-" * 100)
@@ -218,7 +220,7 @@ def main():
     """
     # デフォルトの仕様書ファイルパス
     # プロジェクトルートからの相対パス
-    default_spec_file = 'docs/v1.20.0.yaml'
+    default_spec_file = "docs/v1.20.0.yaml"
 
     # コマンドライン引数の処理
     if len(sys.argv) > 1:
@@ -239,7 +241,7 @@ def main():
         sys.exit(1)
 
     # ファイル拡張子のチェック（YAML/YMLファイルのみ対応）
-    if spec_path.suffix.lower() not in ['.yaml', '.yml']:
+    if spec_path.suffix.lower() not in [".yaml", ".yml"]:
         print(f"⚠️  警告: '{spec_file}' はYAMLファイルではないようです")
         print("   続行しますが、パースエラーが発生する可能性があります")
 
@@ -250,5 +252,5 @@ def main():
     count_description_lengths(spec_file)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
