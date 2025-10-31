@@ -5699,7 +5699,42 @@ paths:
   /incomingCallHistories/{incomingCallHistoryId}:
     patch:
       summary: 着信履歴編集
-      description: 自分の着信履歴を編集できます。指定した項目のみ変更が反映されます。
+      description: |
+        ツール名: Update Incoming Call History
+        説明: 自分の着信履歴を編集します。指定した項目のみ変更が反映されます。
+
+        機能:
+        - メモの追加・編集
+        - 着信履歴情報の部分更新
+
+        パラメータ:
+        必須パラメータ（パス）:
+        - incomingCallHistoryId (integer): 編集対象の着信履歴識別番号
+
+        必須パラメータ（リクエストボディ）:
+        - なし（すべてオプション）
+
+        オプションパラメータ（リクエストボディ）:
+        - memo (string): メモ（最大1000文字）
+
+        取得できるデータ:
+        - 更新後の着信履歴全情報
+
+        用途:
+        - 着信対応内容の記録
+        - フォローアップ情報の追記
+        - 通話メモの管理
+
+        制限:
+        - 自分宛ての着信履歴のみ編集可能
+        - APIキーごとのレート制限適用
+
+        例:
+        ```json
+        {
+          "memo": "折り返し電話が必要"
+        }
+        ```
       operationId: IncomingCallHistoryPatch
       tags:
         - 履歴
