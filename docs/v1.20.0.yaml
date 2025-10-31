@@ -6391,13 +6391,46 @@ paths:
     post:
       summary: THANKS カード送信
       description: |
-        THANKS カードをおくります。  
-        宛先とメッセージ以外は次の内容で固定です。 
-        - ポイント：なし  
-        - スタンプ：なし  
+        ツール名: Send Thanks Card
+        説明: THANKS カードを送信します（PHONE APPLI THANKS連携機能）。
 
-        ※ カードの差出人は自分です。  
-        ※ ご利用には PA THANKS 利用権限が必要です。
+        機能:
+        - 感謝のメッセージ送信
+        - 複数ユーザーへの同時送信
+        - メッセージ付きカード送信
+
+        パラメータ:
+        必須パラメータ（リクエストボディ）:
+        - recipientUserIds (array[integer]): 受信者のユーザ識別番号
+        - message (string): メッセージ
+
+        オプションパラメータ:
+        - なし
+
+        取得できるデータ:
+        - 送信したTHANKSカード情報
+        - カード識別番号
+
+        用途:
+        - 社内コミュニケーション活性化
+        - 従業員エンゲージメント向上
+        - 感謝の気持ちの可視化
+        - チームビルディング
+
+        制限:
+        - PHONE APPLI THANKS機能が有効な場合のみ利用可能
+        - PA THANKS利用権限が必要
+        - カードの差出人は自分（APIキー所有者）
+        - ポイント・スタンプは送信不可（固定で「なし」）
+        - APIキーごとのレート制限適用
+
+        例:
+        ```json
+        {
+          "recipientUserIds": [123, 456, 789],
+          "message": "プロジェクトの成功、ありがとうございました！"
+        }
+        ```
       operationId: ThanksCardsPost
       tags:
         - THANKS カード
