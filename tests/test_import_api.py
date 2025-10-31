@@ -81,6 +81,7 @@ paths: {}
         assert result["version"] == "1.0"
         assert result["description"] == ""
 
+
 class TestImportAPIToAPIM:
     """Tests for import_api_to_apim function."""
 
