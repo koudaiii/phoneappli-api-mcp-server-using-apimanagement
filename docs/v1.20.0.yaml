@@ -3687,8 +3687,70 @@ paths:
     patch:
       summary: 社外連絡先編集
       description: |
-        社外連絡先（共有/個人）の情報を編集できます。指定した項目のみ変更が反映されます。  
-        編集できるのは、編集権限があるフォルダ内の連絡先です。
+        ツール名: Update External Contact
+        説明: 社外連絡先（共有/個人）の情報を編集します。指定した項目のみ変更が反映されます。
+
+        機能:
+        - 連絡先情報の部分更新
+        - 会社情報（会社名、代表電話、URL、本社所在地）の編集
+        - 部署情報（部署名、代表電話、URL、事業所所在地）の編集
+        - 個人情報（氏名、役職、電話番号、メールアドレス）の編集
+        - コメント・備考の編集
+
+        パラメータ:
+        必須パラメータ（パス）:
+        - contactId (integer): 編集対象の社外連絡先識別番号
+
+        必須パラメータ（リクエストボディ）:
+        - なし（すべてオプション）
+
+        オプションパラメータ（リクエストボディ）:
+        - companyName (string): 会社名（最大200文字）
+        - companyNameKana (string): 会社名カナ（最大200文字）
+        - companyDelegatedPhoneNum (string): 会社代表番号（最大50文字, パターン: [0-9*#,;+-]*）
+        - companyUrl (string): 会社URL（最大256文字）
+        - headquartersLocation (object): 本社所在地
+        - divisionName (string): 部署名（最大50文字）
+        - divisionNameKana (string): 部署名カナ（最大50文字）
+        - divisionDelegatedPhoneNum (string): 部署代表番号（最大50文字, パターン: [0-9*#,;+-]*）
+        - divisionUrl (string): 部署URL（最大256文字）
+        - officeLocation (object): オフィス所在地
+        - position (string): 役職（最大100文字）
+        - fullname (string): 氏名（最大50文字）
+        - fullnameKana (string): 氏名カナ（最大50文字）
+        - fullnameAlphabet (string): 氏名英字（最大50文字）
+        - phoneNum (string): 電話番号（最大50文字, パターン: [0-9*#,;+-]*）
+        - companyMobileNum (string): 会社携帯番号（最大50文字, パターン: [0-9*#,;+-]*）
+        - personalMobileNum (string): 個人携帯番号（最大50文字, パターン: [0-9*#,;+-]*）
+        - mobileNum (string): 携帯番号（最大50文字, パターン: [0-9*#,;+-]*）
+        - faxNum (string): FAX番号（最大50文字, パターン: [0-9*#,;+-]*）
+        - email1 (string): メールアドレス1（最大256文字）
+        - email2 (string): メールアドレス2（最大256文字）
+        - webUrl (string): Web URL（最大256文字）
+        - comment (string): コメント（最大300文字）
+        - remarks (string): 備考（最大1000文字）
+
+        取得できるデータ:
+        - 更新後の社外連絡先全情報
+
+        用途:
+        - 名刺情報の更新
+        - 取引先情報の変更（組織変更、担当者変更等）
+        - 連絡先情報の修正
+        - 顧客データベースのメンテナンス
+
+        制限:
+        - 編集権限があるフォルダ内の連絡先のみ編集可能
+        - APIキーごとのレート制限適用
+
+        例:
+        ```json
+        {
+          "fullname": "山田 太郎",
+          "email1": "yamada@example.com",
+          "companyMobileNum": "+819012345678"
+        }
+        ```
       operationId: ExternalContactsPatch
       tags:
         - 社外連絡先
