@@ -10,7 +10,6 @@ import pytest
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 from import_api import (
-    generate_api_policy,
     get_api_info_from_spec,
     import_api_to_apim,
     load_openapi_spec,
