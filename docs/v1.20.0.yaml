@@ -875,6 +875,9 @@ paths:
         - APIキーごとのレート制限適用
 
         例:
+        POST /users
+        Content-Type: application/json
+
         ```json
         {
           "userType": "REGULAR_USER",
@@ -1470,6 +1473,9 @@ paths:
         - APIキーごとのレート制限適用
 
         例:
+        PATCH /users/{userId}
+        Content-Type: application/json
+
         ```json
         {
           "fullname": "山田 太郎",
@@ -2120,6 +2126,9 @@ paths:
         - APIキーごとのレート制限適用
 
         例:
+        PATCH /users/{userId}/profile
+        Content-Type: application/json
+
         ```json
         {
           "oneWord": "チャレンジ精神を大切にしています",
@@ -2872,6 +2881,9 @@ paths:
         - APIキーごとのレート制限適用
 
         例:
+        PATCH /destinations
+        Content-Type: application/json
+
         ```json
         [
           {
@@ -3744,6 +3756,9 @@ paths:
         - APIキーごとのレート制限適用
 
         例:
+        PATCH /externalContacts/{contactId}
+        Content-Type: application/json
+
         ```json
         {
           "fullname": "山田 太郎",
@@ -4581,6 +4596,9 @@ paths:
         - APIキーごとのレート制限適用
 
         例:
+        PATCH /sharedContactsFolders/{folderNum}
+        Content-Type: application/json
+
         ```json
         {
           "folderName": "営業部取引先"
@@ -5234,6 +5252,9 @@ paths:
         - APIキーごとのレート制限適用
 
         例:
+        PATCH /personalContactsFolders/{folderNum}
+        Content-Type: application/json
+
         ```json
         {
           "folderName": "大学時代の友人"
@@ -5730,6 +5751,9 @@ paths:
         - APIキーごとのレート制限適用
 
         例:
+        PATCH /incomingCallHistories/{incomingCallHistoryId}
+        Content-Type: application/json
+
         ```json
         {
           "memo": "折り返し電話が必要"
@@ -6085,6 +6109,9 @@ paths:
         - APIキーごとのレート制限適用
 
         例:
+        PATCH /outgoingCallHistories/{outgoingCallHistoryId}
+        Content-Type: application/json
+
         ```json
         {
           "memo": "次回フォローアップ: 2024年2月15日"
@@ -6316,6 +6343,9 @@ paths:
         - APIキーごとのレート制限適用
 
         例:
+        PATCH /paPlace/locations
+        Content-Type: application/json
+
         ```json
         [
           {
@@ -6425,6 +6455,9 @@ paths:
         - APIキーごとのレート制限適用
 
         例:
+        POST /paThanks/cards
+        Content-Type: application/json
+
         ```json
         {
           "recipientUserIds": [123, 456, 789],
