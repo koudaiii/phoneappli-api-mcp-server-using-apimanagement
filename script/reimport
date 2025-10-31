@@ -1,0 +1,201 @@
+#!/usr/bin/env bash
+set -e
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# Default values
+RESOURCE_GROUP=""
+APIM_NAME=""
+API_ID="phoneappli-api"
+OPENAPI_SPEC="docs/v1.20.0.yaml"
+
+# Show usage
+usage() {
+    echo -e "${BLUE}Usage: $0 -g <resource-group> -apim <apim-name> [options]${NC}"
+    echo ""
+    echo "Required arguments:"
+    echo "  -g, --resource-group    Azure resource group name"
+    echo "  -apim, --apim-name      Azure API Management service name"
+    echo ""
+    echo "Optional arguments:"
+    echo "  -api, --api-id          API ID in APIM (default: phoneappli-api)"
+    echo "  -spec, --spec-file      OpenAPI spec file path (default: docs/v1.20.0.yaml)"
+    echo "  -h, --help              Show this help message"
+    echo ""
+    echo "Example:"
+    echo "  $0 -g my-resource-group -apim my-apim-service"
+    echo "  $0 -g my-rg -apim my-apim -api custom-api-id -spec docs/custom.yaml"
+    exit 1
+}
+
+# Parse arguments
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -g|--resource-group)
+            RESOURCE_GROUP="$2"
+            shift 2
+            ;;
+        -apim|--apim-name)
+            APIM_NAME="$2"
+            shift 2
+            ;;
+        -api|--api-id)
+            API_ID="$2"
+            shift 2
+            ;;
+        -spec|--spec-file)
+            OPENAPI_SPEC="$2"
+            shift 2
+            ;;
+        -h|--help)
+            usage
+            ;;
+        *)
+            echo -e "${RED}Error: Unknown option $1${NC}"
+            usage
+            ;;
+    esac
+done
+
+# Validate required arguments
+if [[ -z "$RESOURCE_GROUP" ]]; then
+    echo -e "${RED}Error: Resource group (-g) is required${NC}"
+    usage
+fi
+
+if [[ -z "$APIM_NAME" ]]; then
+    echo -e "${RED}Error: APIM name (-apim) is required${NC}"
+    usage
+fi
+
+# Validate OpenAPI spec file exists
+if [[ ! -f "$OPENAPI_SPEC" ]]; then
+    echo -e "${RED}Error: OpenAPI spec file not found: $OPENAPI_SPEC${NC}"
+    exit 1
+fi
+
+echo -e "${BLUE}========================================${NC}"
+echo -e "${BLUE}PHONE APPLI API Reimport Script${NC}"
+echo -e "${BLUE}========================================${NC}"
+echo ""
+echo -e "${YELLOW}Configuration:${NC}"
+echo "  Resource Group: $RESOURCE_GROUP"
+echo "  APIM Name: $APIM_NAME"
+echo "  API ID: $API_ID"
+echo "  OpenAPI Spec: $OPENAPI_SPEC"
+echo ""
+
+# Step 1: Validate OpenAPI spec
+echo -e "${YELLOW}Step 1: Validating OpenAPI specification...${NC}"
+if ! ./script/validate "$OPENAPI_SPEC"; then
+    echo -e "${RED}Error: OpenAPI spec validation failed${NC}"
+    exit 1
+fi
+echo -e "${GREEN}✓ OpenAPI spec is valid${NC}"
+echo ""
+
+# Step 2: Analyze descriptions
+echo -e "${YELLOW}Step 2: Analyzing API descriptions...${NC}"
+./script/analyzer "$OPENAPI_SPEC"
+echo ""
+
+# Step 3: Check for long descriptions
+EXCEEDS=$(uv run python -c "
+import yaml
+spec_file = '$OPENAPI_SPEC'
+with open(spec_file, 'r', encoding='utf-8') as f:
+    spec = yaml.safe_load(f)
+count = 0
+if 'paths' in spec:
+    for path, path_item in spec['paths'].items():
+        for method in ['get', 'post', 'put', 'patch', 'delete']:
+            if method in path_item:
+                desc = path_item[method].get('description', '')
+                if len(desc) > 1000:
+                    count += 1
+print(count)
+")
+
+if [[ "$EXCEEDS" -gt 0 ]]; then
+    echo -e "${YELLOW}Warning: $EXCEEDS endpoint(s) have descriptions exceeding 1000 characters${NC}"
+    echo -e "${YELLOW}Run './script/fix-descriptions' to fix them before reimporting${NC}"
+    read -p "Do you want to continue anyway? (y/N): " -n 1 -r
+    echo
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        echo -e "${YELLOW}Aborted${NC}"
+        exit 0
+    fi
+fi
+
+# Step 4: Backup current API
+echo -e "${YELLOW}Step 3: Backing up current API configuration...${NC}"
+BACKUP_DIR="backups/$(date +%Y%m%d_%H%M%S)"
+mkdir -p "$BACKUP_DIR"
+
+az apim api show \
+    --resource-group "$RESOURCE_GROUP" \
+    --service-name "$APIM_NAME" \
+    --api-id "$API_ID" \
+    --output json > "$BACKUP_DIR/api-config.json" 2>/dev/null || true
+
+if [[ -f "$BACKUP_DIR/api-config.json" ]]; then
+    echo -e "${GREEN}✓ Backup saved to: $BACKUP_DIR/api-config.json${NC}"
+else
+    echo -e "${YELLOW}⚠ No existing API found (this might be a new import)${NC}"
+fi
+echo ""
+
+# Step 5: Import API to APIM
+echo -e "${YELLOW}Step 4: Importing API to Azure API Management...${NC}"
+echo "This may take a few minutes..."
+echo ""
+
+az apim api import \
+    --resource-group "$RESOURCE_GROUP" \
+    --service-name "$APIM_NAME" \
+    --api-id "$API_ID" \
+    --path "/v1" \
+    --specification-format OpenApi \
+    --specification-path "$OPENAPI_SPEC" \
+    --api-type http \
+    --protocols https \
+    --subscription-required true
+
+if [[ $? -eq 0 ]]; then
+    echo ""
+    echo -e "${GREEN}✓ API imported successfully!${NC}"
+else
+    echo ""
+    echo -e "${RED}✗ API import failed${NC}"
+    exit 1
+fi
+echo ""
+
+# Step 6: Show API details
+echo -e "${YELLOW}Step 5: Retrieving API details...${NC}"
+az apim api show \
+    --resource-group "$RESOURCE_GROUP" \
+    --service-name "$APIM_NAME" \
+    --api-id "$API_ID" \
+    --output table
+
+echo ""
+echo -e "${BLUE}========================================${NC}"
+echo -e "${GREEN}✓ Reimport completed successfully!${NC}"
+echo -e "${BLUE}========================================${NC}"
+echo ""
+echo -e "${YELLOW}Next steps:${NC}"
+echo "  1. Test the API endpoints"
+echo "  2. Update API policies if needed"
+echo "  3. Configure MCP server to use the updated API"
+echo ""
+echo -e "${YELLOW}Useful commands:${NC}"
+echo "  - View API operations: az apim api operation list -g $RESOURCE_GROUP --service-name $APIM_NAME --api-id $API_ID"
+echo "  - Test endpoint: ./script/test"
+echo "  - View backup: cat $BACKUP_DIR/api-config.json"
+echo ""

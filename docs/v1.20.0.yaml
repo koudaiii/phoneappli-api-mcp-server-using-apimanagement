@@ -74,7 +74,7 @@ paths:
   /users:
     get:
       summary: 社内連絡先一覧取得
-      description: |
+      description: |-
         ツール名: List Internal Contacts
         説明: 社内電話帳に登録された連絡先（ユーザ）の情報を一覧で取得します。
 
@@ -86,68 +86,39 @@ paths:
         - ユーザータイプでの絞り込み
 
         パラメータ:
-        必須パラメータ:
-        - なし
-
-        オプションパラメータ:
-        - page (integer): 取得対象ページの番号 (デフォルト: 0, 最小: 0)
-        - pageSize (integer): 1ページあたりの件数 (デフォルト: 30, 最小: 1, 最大: 100)
+        - page (integer): ページ番号 (デフォルト: 0)
+        - pageSize (integer): 1ページあたりの件数 (デフォルト: 30, 最大: 100)
         - select (array[string]): 取得対象項目（権限範囲の項目のみ指定可能）
-        - orderBy (string): ソート順 (fullname/sortScore/employeeNum, デフォルト: fullname)
-        - orderDirection (string): ソート方向 (asc/desc, デフォルト: asc)
-        - userType (string): ユーザタイプ (REGULAR_USER/REGISTRATION_ONLY_USER/FACILITY)
-        - fullname (string): 氏名（部分一致, 最大50文字）
-        - fullnameKana (string): 氏名カナ（部分一致, 最大50文字）
-        - divisionIds (array[integer]): 部署識別番号（最大50件）
-        - includeSubDepartment (boolean): 配下の部署を含む (デフォルト: false)
-        - userIds (array[integer]): ユーザ識別番号（最大50件）
-        - loginIds (array[string]): ログインID（完全一致, 最大50件）
-        - employeeNum (string): 社員番号（完全一致, 最大50文字）
-        - phoneNum (string): 電話番号（最大50文字）
-        - email1 (string): メールアドレス1（完全一致, 最大256文字）
-        - freeWords (array[string]): フリーワード（カンマ区切りでAND検索, 最大10件, 各最大50文字）
+        - orderBy (string): ソート順 (fullname/sortScore/employeeNum)
+        - orderDirection (string): ソート方向 (asc/desc)
+        - userType: ユーザタイプ (REGULAR_USER/REGISTRATION_ONLY_USER/FACILITY)
+        - divisionIds: 部署識別番号（最大50件）、includeSubDepartment: 配下の部署を含む
+        - fullname/fullnameKana: 氏名（部分一致）
+        - phoneNum: 電話番号、email1: メールアドレス
+        - userIds: ユーザ識別番号、loginIds: ログインID、employeeNum: 社員番号
+        - freeWords: フリーワード検索（AND検索、最大10件、各最大50文字）
 
-        取得できるデータ:
+        取得データ:
         - ユーザー識別番号、ログインID、社員番号
-        - 氏名、氏名カナ、氏名英字
-        - 部署情報、役職、職務
-        - 内線番号、会社携帯番号、個人携帯番号、FAX番号
-        - メールアドレス、WEB URL
-        - 権限情報、各種連携設定（Microsoft 365、Google Workspace、PBX等）
+        - 氏名、部署情報、役職、職務
+        - 内線番号、携帯番号、メールアドレス
+        - 権限情報、各種連携設定
 
         用途:
         - 組織内の全ユーザー情報の取得と表示
-        - 特定条件でのユーザー検索（名前、部署、電話番号など）
-        - 社内ディレクトリの自動同期
-        - レポート作成のためのユーザーデータ抽出
+        - 特定条件でのユーザー検索
 
         制限:
         - 権限範囲内の項目のみ取得可能
         - フリーワード検索時は最大10,000件まで
-        - 1ページあたり最大100件
         - APIキーごとのレート制限適用
-
-        例:
-        ```
-        # 全ユーザーを取得
-        GET /users?page=0&pageSize=30
-
-        # 特定部署のユーザーを検索
-        GET /users?divisionIds=123&includeSubDepartment=true
-
-        # フリーワード検索
-        GET /users?freeWords=山田,営業部
-        ```
       operationId: UsersGet
       tags:
         - 社内連絡先
       parameters:
         - name: page
           in: query
-          description: |
-            取得対象ページの番号  
-            ※ freeWords を指定した場合、検索結果のうち1〜10000件を取得  
-            　（page・pageSize の指定が10000件より多いとエラー）
+          description: "取得対象ページの番号  \n※ freeWords を指定した場合、検索結果のうち1〜10000件を取得  \n　（page・pageSize の指定が10000件より多いとエラー）\n"
           schema:
             type: integer
             format: int32
@@ -155,10 +126,7 @@ paths:
             default: 0
         - name: pageSize
           in: query
-          description: |
-            1ページあたりの件数  
-            ※ freeWords を指定した場合、検索結果のうち1〜10000件を取得  
-            　（page・pageSize の指定が10000件より多いとエラー）
+          description: "1ページあたりの件数  \n※ freeWords を指定した場合、検索結果のうち1〜10000件を取得  \n　（page・pageSize の指定が10000件より多いとエラー）\n"
           schema:
             type: integer
             format: int32
@@ -167,9 +135,7 @@ paths:
             default: 30
         - name: select
           in: query
-          description: |
-            取得対象項目  
-            ※ 権限範囲の項目のみ指定可能
+          description: "取得対象項目  \n※ 権限範囲の項目のみ指定可能\n"
           schema:
             type: array
             items:
@@ -234,11 +200,7 @@ paths:
                 - contactDetailsUrl
         - name: orderBy
           in: query
-          description: |
-            ソートの対象
-            - fullname: 氏名カナ順  
-            - sortScore: ソートスコア順  
-            - employeeNum: 社員番号順
+          description: "ソートの対象\n- fullname: 氏名カナ順  \n- sortScore: ソートスコア順  \n- employeeNum: 社員番号順\n"
           schema:
             type: string
             enum: &ref_30
@@ -248,10 +210,7 @@ paths:
             default: fullname
         - name: orderDirection
           in: query
-          description: |
-            ソートの並び順
-            - asc: 昇順  
-            - desc: 降順
+          description: "ソートの並び順\n- asc: 昇順  \n- desc: 降順\n"
           schema:
             type: string
             enum: &ref_14
@@ -323,11 +282,7 @@ paths:
             maxLength: 50
         - name: phoneNum
           in: query
-          description: |
-            取得対象の電話番号  
-            ※ PA PEOPLEでは、電話番号は「+」（先頭以外）と「-」を含まない書式で登録されている  
-            （例：APIで「+81-3-1234-5678」を指定した場合、「+81312345678」と登録されている連絡先を取得できる）  
-            ※ 部分一致検索不可
+          description: "取得対象の電話番号  \n※ PA PEOPLEでは、電話番号は「+」（先頭以外）と「-」を含まない書式で登録されている  \n（例：APIで「+81-3-1234-5678」を指定した場合、「+81312345678」と登録されている連絡先を取得できる）  \n※ 部分一致検索不可\n"
           schema:
             type: string
             maxLength: 50
@@ -340,16 +295,7 @@ paths:
             maxLength: 256
         - name: freeWords
           in: query
-          description: |
-            フリーワード検索  
-            ※ カンマ区切りで AND 検索  
-            ※ 次の項目との同時指定不可
-            - fullname
-            - fullnameKana
-            - loginIds
-            - employeeNum
-            - phoneNum
-            - email1
+          description: "フリーワード検索  \n※ カンマ区切りで AND 検索  \n※ 次の項目との同時指定不可\n- fullname\n- fullnameKana\n- loginIds\n- employeeNum\n- phoneNum\n- email1\n"
           schema:
             type: array
             items:
@@ -479,9 +425,7 @@ paths:
                           description: スキル
                           type: string
                         pbxPartition:
-                          description: |
-                            パーティション  
-                            ※ CUCM連携利用環境のみ有効
+                          description: "パーティション  \n※ CUCM連携利用環境のみ有効\n"
                           type: string
                         extensionNum:
                           description: 内線番号
@@ -550,21 +494,7 @@ paths:
                           description: PA Sync表示ラベル
                           type: string
                         spCallSettings:
-                          description: |
-                            スマートフォン発信機能  
-                            - DIRECT_CALL: 直接発信
-                            - SETTING_1: 発信設定 1
-                            - SETTING_2: 発信設定 2
-                            - SETTING_3: 発信設定 3
-                            - SETTING_4: 発信設定 4
-                            - SETTING_5: 発信設定 5
-                            - SETTING_6: 発信設定 6
-                            - SETTING_7: 発信設定 7
-                            - SETTING_8: 発信設定 8
-                            - SETTING_9: 発信設定 9
-                            - SETTING_10: 発信設定 10
-
-                            ※ 環境で登録された発信設定のみ有効
+                          description: "スマートフォン発信機能  \n- DIRECT_CALL: 直接発信\n- SETTING_1: 発信設定 1\n- SETTING_2: 発信設定 2\n- SETTING_3: 発信設定 3\n- SETTING_4: 発信設定 4\n- SETTING_5: 発信設定 5\n- SETTING_6: 発信設定 6\n- SETTING_7: 発信設定 7\n- SETTING_8: 発信設定 8\n- SETTING_9: 発信設定 9\n- SETTING_10: 発信設定 10\n\n※ 環境で登録された発信設定のみ有効\n"
                           type: array
                           items:
                             type: string
@@ -581,31 +511,7 @@ paths:
                               - SETTING_9
                               - SETTING_10
                         roles:
-                          description: |
-                            権限コントロール  
-                            - ADMIN_COMPANY: 企業情報
-                            - ADMIN_DIVISION: 部署
-                            - ADMIN_USER: ユーザ
-                            - ADMIN_INTERNAL_CONTACT: 社内電話帳
-                            - ADMIN_COMMON_CONTACT: 共有電話帳
-                            - ADMIN_PERSONAL_CONTACT: 個人電話帳
-                            - ADMIN_INFORMATION: お知らせ
-                            - ADMIN_ACTION_LOG: ログ出力
-                            - ADMIN_ACTIVE_DIRECTORY: AD連携
-                            - ADMIN_SANSAN_IMPORT: Sansan連携
-                            - ADMIN_CUCM: CUCM連携
-                            - ADMIN_GOTALK: トーク
-                            - ADMIN_DIAL_PICKUP: ダイヤルピックアップ
-                            - ADMIN_IBASHO: PA PLACE ※1
-                            - ADMIN_CMX: Cisco CMX ※2
-                            - ADMIN_MERAKI: Cisco MERAKI ※2
-                            - ADMIN_EX_BEACON: EXBeacon ※2
-                            - ADMIN_THANKS: PA THANKS
-                            - ADMIN_AZURE_ACTIVE_DIRECTORY: Azure AD連携
-                            - ADMIN_ANPI: 安否
-
-                            ※1 PHONE APPLI PLACE を2019年7月4日以降にご契約の場合、「ADMIN_IBASHO」が有効  
-                            ※2 PHONE APPLI PLACE を2019年7月3日以前にご契約の場合、ご利用中の製品・サービスに該当する権限が有効
+                          description: "権限コントロール  \n- ADMIN_COMPANY: 企業情報\n- ADMIN_DIVISION: 部署\n- ADMIN_USER: ユーザ\n- ADMIN_INTERNAL_CONTACT: 社内電話帳\n- ADMIN_COMMON_CONTACT: 共有電話帳\n- ADMIN_PERSONAL_CONTACT: 個人電話帳\n- ADMIN_INFORMATION: お知らせ\n- ADMIN_ACTION_LOG: ログ出力\n- ADMIN_ACTIVE_DIRECTORY: AD連携\n- ADMIN_SANSAN_IMPORT: Sansan連携\n- ADMIN_CUCM: CUCM連携\n- ADMIN_GOTALK: トーク\n- ADMIN_DIAL_PICKUP: ダイヤルピックアップ\n- ADMIN_IBASHO: PA PLACE ※1\n- ADMIN_CMX: Cisco CMX ※2\n- ADMIN_MERAKI: Cisco MERAKI ※2\n- ADMIN_EX_BEACON: EXBeacon ※2\n- ADMIN_THANKS: PA THANKS\n- ADMIN_AZURE_ACTIVE_DIRECTORY: Azure AD連携\n- ADMIN_ANPI: 安否\n\n※1 PHONE APPLI PLACE を2019年7月4日以降にご契約の場合、「ADMIN_IBASHO」が有効  \n※2 PHONE APPLI PLACE を2019年7月3日以前にご契約の場合、ご利用中の製品・サービスに該当する権限が有効\n"
                           type: array
                           items:
                             type: string
@@ -645,14 +551,10 @@ paths:
                             - FORCE
                             - SELECT
                         pbxFeatureAvailable:
-                          description: |
-                            PBX連携  
-                            ※ PBX連携利用環境のみ有効
+                          description: "PBX連携  \n※ PBX連携利用環境のみ有効\n"
                           type: boolean
                         tenantCucmAdapterSettings:
-                          description: |
-                            CUCMアダプタ設定  
-                            ※ CUCM連携利用環境のみ有効
+                          description: "CUCMアダプタ設定  \n※ CUCM連携利用環境のみ有効\n"
                           type: object
                           properties: &ref_33
                             tenantCucmAdapterSettingsId:
@@ -663,19 +565,13 @@ paths:
                               description: CUCMアダプタ名
                               type: string
                         ctiPort:
-                          description: |
-                            CTIポート  
-                            ※ CUCM連携利用環境のみ有効
+                          description: "CTIポート  \n※ CUCM連携利用環境のみ有効\n"
                           type: string
                         incomingPopupIosApns:
-                          description: |
-                            CUCM iPhone着信通知  
-                            ※ CUCM連携利用環境のみ有効
+                          description: "CUCM iPhone着信通知  \n※ CUCM連携利用環境のみ有効\n"
                           type: boolean
                         tenantAvayaAdapterSettings:
-                          description: |
-                            Avayaアダプタ設定  
-                            ※ Avaya連携環境のみ有効
+                          description: "Avayaアダプタ設定  \n※ Avaya連携環境のみ有効\n"
                           type: object
                           properties: &ref_34
                             tenantAvayaAdapterSettingsId:
@@ -686,55 +582,35 @@ paths:
                               description: Avayaアダプタ名
                               type: string
                         gotalkAvailable:
-                          description: |
-                            トーク  
-                            ※ トーク利用環境のみ有効
+                          description: "トーク  \n※ トーク利用環境のみ有効\n"
                           type: boolean
                         gotalkLogDownloadAvailable:
-                          description: |
-                            トークログダウンロード  
-                            ※ トーク利用環境のみ有効
+                          description: "トークログダウンロード  \n※ トーク利用環境のみ有効\n"
                           type: boolean
                         anpiLoginId:
-                          description: |
-                            安否ログインID  
-                            ※ 安否確認利用環境のみ有効
+                          description: "安否ログインID  \n※ 安否確認利用環境のみ有効\n"
                           type: string
                         mobileMacAddress:
-                          description: |
-                            スマートデバイス  
-                            ※ PHONE APPLI PLACE 利用環境のみ有効
+                          description: "スマートデバイス  \n※ PHONE APPLI PLACE 利用環境のみ有効\n"
                           type: string
                         pcMacAddress:
-                          description: |
-                            PC  
-                            ※ PHONE APPLI PLACE 利用環境のみ有効
+                          description: "PC  \n※ PHONE APPLI PLACE 利用環境のみ有効\n"
                           type: string
                         bleId:
-                          description: |
-                            位置情報タグ  
-                            ※ PHONE APPLI PLACE 利用環境のみ有効
+                          description: "位置情報タグ  \n※ PHONE APPLI PLACE 利用環境のみ有効\n"
                           type: string
                         thanksAvailable:
-                          description: |
-                            PA THANKS 利用権限  
-                            ※ PHONE APPLI THANKS 利用環境のみ有効
+                          description: "PA THANKS 利用権限  \n※ PHONE APPLI THANKS 利用環境のみ有効\n"
                           type: boolean
                         officeLinkExtensionNum:
-                          description: |
-                            オフィスリンク内線番号  
-                            ※ オフィスリンク利用環境のみ有効
+                          description: "オフィスリンク内線番号  \n※ オフィスリンク利用環境のみ有効\n"
                           type: string
                         officeLinkCallSettings:
-                          description: |
-                            オフィスリンク発信設定オブジェクト  
-                            ※ オフィスリンク利用環境のみ有効
+                          description: "オフィスリンク発信設定オブジェクト  \n※ オフィスリンク利用環境のみ有効\n"
                           type: object
                           properties:
                             officeLinkPointName:
-                              description: |
-                                オフィスリンク拠点名  
-                                「拠点未設定」の場合、空文字列
+                              description: "オフィスリンク拠点名  \n「拠点未設定」の場合、空文字列\n"
                               type: string
                             officeLinkCallSetting:
                               description: |
@@ -812,7 +688,7 @@ paths:
             - User.Read
     post:
       summary: 社内連絡先作成
-      description: |
+      description: |-
         ツール名: Create Internal Contact
         説明: 新しい社内連絡先（ユーザ）を作成します。
 
@@ -823,73 +699,31 @@ paths:
         - 各種連携サービス（Microsoft 365、Google Workspace、PBXなど）の設定
         - 権限コントロールの付与
 
-        パラメータ:
-        必須パラメータ（リクエストボディ）:
+        必須パラメータ:
         - loginId (string): ログインID（最大254文字）
-        - fullname (string): 氏名（最大50文字、空白のみ不可）
-        - password (string): パスワード（基本利用ユーザーの場合必須、最大50文字、空白のみ不可）
+        - fullname (string): 氏名（最大50文字）
+        - password (string): パスワード（基本利用ユーザーの場合必須、最大50文字）
 
-        オプションパラメータ（リクエストボディ）:
-        - userType (string): ユーザタイプ (REGULAR_USER/REGISTRATION_ONLY_USER/FACILITY)
-        - enabled (boolean): アカウント有効/無効
-        - forceLocalAuthentication (boolean): ローカル認証のみに制限
-        - deviceId (string): 端末ID（最大8文字）
-        - deviceIdAcceptInitialize (boolean): 端末ID初回認証
-        - initialPasswordForceChange (boolean): 初期パスワード変更 (デフォルト: false)
-        - sortScore (integer): ソートスコア (0-999999999)
-        - level (integer): レベル (1-10, デフォルト: 5)
-        - fullnameKana (string): 氏名カナ（最大50文字）
-        - fullnameAlphabet (string): 氏名英字（最大50文字）
-        - employeeNum (string): 社員番号（最大50文字）
-        - position (string): 役職（最大100文字）
-        - positionAlphabet (string): 役職英字（最大100文字）
-        - post (string): 職務（最大50文字）
-        - divisionIds (array[integer]): 部署識別番号（最大50件）
-        - extensionNum (string): 内線番号（最大50文字）
-        - companyMobileNum (string): 会社携帯番号（最大50文字）
-        - personalMobileNum (string): 個人携帯番号（最大50文字）
-        - phoneNum (string): 電話番号（最大50文字）
-        - mobileNum (string): 携帯番号（最大50文字）
-        - faxNum (string): FAX番号（最大50文字）
-        - email1 (string): メールアドレス1（最大256文字）
-        - email2 (string): メールアドレス2（最大256文字）
-        - webUrl (string): WEB URL（最大256文字）
-        - groupware (string): グループウェア連携 (M365/GWS/NONE, デフォルト: M365)
-        - roles (array[string]): 権限コントロール
-        - paapiAvailable (boolean): API利用権限
+        主なオプションパラメータ:
+        - userType: ユーザタイプ (REGULAR_USER/REGISTRATION_ONLY_USER/FACILITY)
+        - enabled: アカウント有効/無効
+        - divisionIds: 部署識別番号、employeeNum: 社員番号、position: 役職
+        - email1/email2: メールアドレス、phoneNum: 電話番号
+        - extensionNum: 内線番号、companyMobileNum: 会社携帯、personalMobileNum: 個人携帯
+        - roles: 権限コントロール、paapiAvailable: API利用権限
+        - groupware: グループウェア連携 (M365/GWS)、m365Account/gwsAccount
 
         取得できるデータ:
         - 作成されたユーザーの全情報（ユーザー識別番号を含む）
 
         用途:
-        - 新入社員のアカウント作成
-        - 一括ユーザー登録の自動化
+        - 新入社員のアカウント作成、一括ユーザー登録の自動化
         - 外部システムとの連携によるユーザープロビジョニング
-        - 施設・備品の登録
 
         制限:
         - ユーザ管理権限が必要
         - ユーザタイプによって設定可能な項目が異なる
-        - 基本利用ユーザーはパスワード必須
-        - 同一ログインIDは登録不可
         - APIキーごとのレート制限適用
-
-        例:
-        POST /users
-        Content-Type: application/json
-
-        ```json
-        {
-          "userType": "REGULAR_USER",
-          "loginId": "yamada.taro",
-          "password": "SecurePassword123",
-          "fullname": "山田 太郎",
-          "fullnameKana": "ヤマダ タロウ",
-          "email1": "yamada.taro@example.com",
-          "divisionIds": [123],
-          "enabled": true
-        }
-        ```
       operationId: UsersPost
       tags:
         - 社内連絡先
@@ -928,10 +762,7 @@ paths:
                   maxLength: 254
                   pattern: ^[@a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+$
                 password:
-                  description: |
-                    パスワード  
-                    ※ 基本利用ユーザの場合は必須  
-                    ※ 基本利用ユーザ以外の場合は指定不要
+                  description: "パスワード  \n※ 基本利用ユーザの場合は必須  \n※ 基本利用ユーザ以外の場合は指定不要\n"
                   type: string
                   maxLength: 50
                   pattern: ^(?!(\s|　)*$).+
@@ -982,19 +813,14 @@ paths:
                   type: string
                   maxLength: 50
                 divisionIds:
-                  description: |
-                    部署識別番号  
-                    ※ 重複していた場合は1つ目を登録
+                  description: "部署識別番号  \n※ 重複していた場合は1つ目を登録\n"
                   type: array
                   maxItems: 50
                   items:
                     type: integer
                     format: int64
                 positionsOfDivision:
-                  description: |
-                    部署に紐づく役職  
-                    ※ リクエストのdivisionIdsに含まれていない部署IDが指定された場合はエラー  
-                    ※ 部署IDが重複していた場合は重複エラー
+                  description: "部署に紐づく役職  \n※ リクエストのdivisionIdsに含まれていない部署IDが指定された場合はエラー  \n※ 部署IDが重複していた場合は重複エラー\n"
                   type: array
                   maxItems: 50
                   items:
@@ -1035,9 +861,7 @@ paths:
                   type: string
                   maxLength: 500
                 pbxPartition:
-                  description: |
-                    パーティション  
-                    ※ CUCM連携利用環境のみ有効
+                  description: "パーティション  \n※ CUCM連携利用環境のみ有効\n"
                   type: string
                   maxLength: 50
                   pattern: ^$|^[0-9A-Za-z _-]+$
@@ -1104,12 +928,7 @@ paths:
                       - chatAccountId
                   uniqueItems: true
                 groupware:
-                  description: |
-                    グループウェア連携  
-                    ※ 複数のグループウェアの連携が有効になっている環境のみ有効
-                    - M365: Microsoft 365
-                    - GWS: Google Workspace
-                    - NONE: Microsoft 365
+                  description: "グループウェア連携  \n※ 複数のグループウェアの連携が有効になっている環境のみ有効\n- M365: Microsoft 365\n- GWS: Google Workspace\n- NONE: Microsoft 365\n"
                   type: string
                   enum: &ref_35
                     - M365
@@ -1117,16 +936,12 @@ paths:
                     - NONE
                   default: M365
                 m365Account:
-                  description: |
-                    Microsoft 365 アカウント  
-                    ※ Microsoft 365 連携のいずれかが有効になっている環境のみ有効
+                  description: "Microsoft 365 アカウント  \n※ Microsoft 365 連携のいずれかが有効になっている環境のみ有効\n"
                   type: string
                   maxLength: 256
                   pattern: ^[0-9A-Za-z.\-_@]*$
                 gwsAccount:
-                  description: |
-                    Google Workspace アカウント  
-                    ※ Google Workspace 連携が有効になっている環境のみ有効
+                  description: "Google Workspace アカウント  \n※ Google Workspace 連携が有効になっている環境のみ有効\n"
                   type: string
                   maxLength: 256
                   pattern: ^[0-9A-Za-z.\-'_@]*$
@@ -1139,22 +954,7 @@ paths:
                   type: string
                   maxLength: 25
                 spCallSettings:
-                  description: |
-                    スマートフォン発信機能  
-                    - DIRECT_CALL: 直接発信（デフォルト値）
-                    - SETTING_1: 発信設定 1
-                    - SETTING_2: 発信設定 2
-                    - SETTING_3: 発信設定 3
-                    - SETTING_4: 発信設定 4
-                    - SETTING_5: 発信設定 5
-                    - SETTING_6: 発信設定 6
-                    - SETTING_7: 発信設定 7
-                    - SETTING_8: 発信設定 8
-                    - SETTING_9: 発信設定 9
-                    - SETTING_10: 発信設定 10
-
-                    ※ 基本利用ユーザ以外の場合は指定不要  
-                    ※ 環境で登録された発信設定のみ有効
+                  description: "スマートフォン発信機能  \n- DIRECT_CALL: 直接発信（デフォルト値）\n- SETTING_1: 発信設定 1\n- SETTING_2: 発信設定 2\n- SETTING_3: 発信設定 3\n- SETTING_4: 発信設定 4\n- SETTING_5: 発信設定 5\n- SETTING_6: 発信設定 6\n- SETTING_7: 発信設定 7\n- SETTING_8: 発信設定 8\n- SETTING_9: 発信設定 9\n- SETTING_10: 発信設定 10\n\n※ 基本利用ユーザ以外の場合は指定不要  \n※ 環境で登録された発信設定のみ有効\n"
                   type: array
                   items:
                     description: スマホ発信設定
@@ -1174,31 +974,7 @@ paths:
                     default: DIRECT_CALL
                   uniqueItems: true
                 roles:
-                  description: |
-                    権限コントロール
-                    - ADMIN_COMPANY: 企業情報
-                    - ADMIN_DIVISION: 部署
-                    - ADMIN_USER: ユーザ
-                    - ADMIN_INTERNAL_CONTACT: 社内電話帳
-                    - ADMIN_COMMON_CONTACT: 共有電話帳
-                    - ADMIN_PERSONAL_CONTACT: 個人電話帳
-                    - ADMIN_INFORMATION: お知らせ
-                    - ADMIN_ACTION_LOG: ログ出力
-                    - ADMIN_ACTIVE_DIRECTORY: AD連携
-                    - ADMIN_SANSAN_IMPORT: Sansan連携
-                    - ADMIN_CUCM: CUCM連携
-                    - ADMIN_GOTALK: トーク
-                    - ADMIN_DIAL_PICKUP: ダイヤルピックアップ
-                    - ADMIN_IBASHO: PA PLACE ※1
-                    - ADMIN_CMX: Cisco CMX ※2
-                    - ADMIN_MERAKI: Cisco MERAKI ※2
-                    - ADMIN_EX_BEACON: EXBeacon ※2
-                    - ADMIN_THANKS: PA THANKS
-                    - ADMIN_AZURE_ACTIVE_DIRECTORY: Azure AD連携
-                    - ADMIN_ANPI: 安否
-
-                    ※1 PHONE APPLI PLACE を2019年7月4日以降にご契約の場合、「ADMIN_IBASHO」が有効  
-                    ※2 PHONE APPLI PLACE を2019年7月3日以前にご契約の場合、ご利用中の製品・サービスに該当する権限が有効
+                  description: "権限コントロール\n- ADMIN_COMPANY: 企業情報\n- ADMIN_DIVISION: 部署\n- ADMIN_USER: ユーザ\n- ADMIN_INTERNAL_CONTACT: 社内電話帳\n- ADMIN_COMMON_CONTACT: 共有電話帳\n- ADMIN_PERSONAL_CONTACT: 個人電話帳\n- ADMIN_INFORMATION: お知らせ\n- ADMIN_ACTION_LOG: ログ出力\n- ADMIN_ACTIVE_DIRECTORY: AD連携\n- ADMIN_SANSAN_IMPORT: Sansan連携\n- ADMIN_CUCM: CUCM連携\n- ADMIN_GOTALK: トーク\n- ADMIN_DIAL_PICKUP: ダイヤルピックアップ\n- ADMIN_IBASHO: PA PLACE ※1\n- ADMIN_CMX: Cisco CMX ※2\n- ADMIN_MERAKI: Cisco MERAKI ※2\n- ADMIN_EX_BEACON: EXBeacon ※2\n- ADMIN_THANKS: PA THANKS\n- ADMIN_AZURE_ACTIVE_DIRECTORY: Azure AD連携\n- ADMIN_ANPI: 安否\n\n※1 PHONE APPLI PLACE を2019年7月4日以降にご契約の場合、「ADMIN_IBASHO」が有効  \n※2 PHONE APPLI PLACE を2019年7月3日以前にご契約の場合、ご利用中の製品・サービスに該当する権限が有効\n"
                   type: array
                   items:
                     type: string
@@ -1220,102 +996,66 @@ paths:
                     - SELECT
                   default: DISABLE
                 pbxFeatureAvailable:
-                  description: |
-                    PBX連携  
-                    ※ PBX連携利用環境のみ有効
+                  description: "PBX連携  \n※ PBX連携利用環境のみ有効\n"
                   type: boolean
                 tenantCucmAdapterSettingsId:
-                  description: |
-                    CUCMアダプタ設定識別番号  
-                    ※ CUCM連携利用環境のみ有効
+                  description: "CUCMアダプタ設定識別番号  \n※ CUCM連携利用環境のみ有効\n"
                   type: integer
                   format: int64
                 ctiPort:
-                  description: |
-                    CTIポート  
-                    ※ CUCM連携利用環境のみ有効
+                  description: "CTIポート  \n※ CUCM連携利用環境のみ有効\n"
                   type: string
                   pattern: ^$|^[0-9a-zA-Z._-]+$
                   maxLength: 15
                 incomingPopupIosApns:
-                  description: |
-                    CUCM iPhone着信通知  
-                    ※ CUCM連携利用環境のみ有効
+                  description: "CUCM iPhone着信通知  \n※ CUCM連携利用環境のみ有効\n"
                   type: boolean
                 tenantAvayaAdapterSettingsId:
-                  description: |
-                    Avayaアダプタ設定識別番号  
-                    ※ Avaya連携環境のみ有効
+                  description: "Avayaアダプタ設定識別番号  \n※ Avaya連携環境のみ有効\n"
                   type: integer
                   format: int64
                 gotalkAvailable:
-                  description: |
-                    トーク  
-                    ※ トーク利用環境のみ有効
+                  description: "トーク  \n※ トーク利用環境のみ有効\n"
                   type: boolean
                 gotalkLogDownloadAvailable:
-                  description: |
-                    トークログダウンロード  
-                    ※ トーク利用環境のみ有効
+                  description: "トークログダウンロード  \n※ トーク利用環境のみ有効\n"
                   type: boolean
                 anpiLoginId:
-                  description: |
-                    安否ログインID  
-                    ※ 安否確認利用環境のみ有効
+                  description: "安否ログインID  \n※ 安否確認利用環境のみ有効\n"
                   type: string
                   maxLength: 40
                   pattern: ^[0-9a-zA-Z=^_{}~@.-]*$
                 mobileMacAddress:
-                  description: |
-                    スマートデバイス  
-                    ※ PHONE APPLI PLACE 利用環境のみ有効
+                  description: "スマートデバイス  \n※ PHONE APPLI PLACE 利用環境のみ有効\n"
                   type: string
                   pattern: ^$|^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$
                 pcMacAddress:
-                  description: |
-                    PC  
-                    ※ PHONE APPLI PLACE 利用環境のみ有効
+                  description: "PC  \n※ PHONE APPLI PLACE 利用環境のみ有効\n"
                   type: string
                   pattern: ^$|^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$
                 bleId:
-                  description: |
-                    位置情報タグ  
-                    ※ PHONE APPLI PLACE 利用環境のみ有効
+                  description: "位置情報タグ  \n※ PHONE APPLI PLACE 利用環境のみ有効\n"
                   type: string
                   maxLength: 64
                   pattern: ^[0-9a-zA-Z:_.@-]*$
                 thanksAvailable:
-                  description: |
-                    PA THANKS 利用権限  
-                    ※ PHONE APPLI THANKS 利用環境のみ有効
+                  description: "PA THANKS 利用権限  \n※ PHONE APPLI THANKS 利用環境のみ有効\n"
                   type: boolean
                 officeLinkExtensionNum:
-                  description: |
-                    オフィスリンク内線番号  
-                    ※ オフィスリンク利用環境のみ有効
+                  description: "オフィスリンク内線番号  \n※ オフィスリンク利用環境のみ有効\n"
                   type: string
                   maxLength: 50
                   pattern: '[0-9*#,;+-]*'
                 officeLinkCallSettings:
-                  description: |
-                    オフィスリンク発信設定オブジェクト  
-                    ※ オフィスリンク利用環境のみ有効
+                  description: "オフィスリンク発信設定オブジェクト  \n※ オフィスリンク利用環境のみ有効\n"
                   type: object
                   properties: &ref_10
                     officeLinkPointName:
-                      description: |
-                        オフィスリンク拠点名  
-                        「拠点未設定」にする場合、空文字列を指定する
+                      description: "オフィスリンク拠点名  \n「拠点未設定」にする場合、空文字列を指定する\n"
                       type: string
                       maxLength: 50
                     officeLinkCallSetting:
-                      description: |
-                        オフィスリンク発信設定  
-                        ※ オフィスリンク拠点名を「拠点未設定」にする場合、 NO_SETTING のみ許可
-                        - NO_SETTING: 設定なし
-                        - NO_EFFECT: 無効
-                        - SELECT: 選択発信
-                        - FORCE: 強制発信
+                      description: "オフィスリンク発信設定  \n※ オフィスリンク拠点名を「拠点未設定」にする場合、 NO_SETTING のみ許可\n- NO_SETTING: 設定なし\n- NO_EFFECT: 無効\n- SELECT: 選択発信\n- FORCE: 強制発信\n"
                       type: string
                       enum:
                         - NO_SETTING
@@ -1323,13 +1063,7 @@ paths:
                         - SELECT
                         - FORCE
                     callFromOfficeNum:
-                      description: |
-                        会社番号から発信設定  
-                        ※ オフィスリンク拠点名を「拠点未設定」にする場合、 NO_SETTING のみ許可
-                        - NO_SETTING: 設定なし
-                        - NO_EFFECT: 無効
-                        - SELECT: 選択発信
-                        - FORCE: 強制発信
+                      description: "会社番号から発信設定  \n※ オフィスリンク拠点名を「拠点未設定」にする場合、 NO_SETTING のみ許可\n- NO_SETTING: 設定なし\n- NO_EFFECT: 無効\n- SELECT: 選択発信\n- FORCE: 強制発信\n"
                       type: string
                       enum:
                         - NO_SETTING
@@ -1408,9 +1142,7 @@ paths:
       parameters:
         - name: userId
           in: path
-          description: |
-            取得対象のユーザ識別番号  
-            ※ 自分の連絡先を取得する場合、ユーザ識別番号の代わりに `me` も有効
+          description: "取得対象のユーザ識別番号  \n※ 自分の連絡先を取得する場合、ユーザ識別番号の代わりに `me` も有効\n"
           schema:
             type: integer
             format: int64
@@ -1524,10 +1256,7 @@ paths:
                   description: 端末ID 初回認証
                   type: boolean
                 password:
-                  description: |
-                    パスワード  
-                    ※ 基本利用ユーザに変更する場合は必須  
-                    ※ 基本利用ユーザ以外に変更する場合は指定不要
+                  description: "パスワード  \n※ 基本利用ユーザに変更する場合は必須  \n※ 基本利用ユーザ以外に変更する場合は指定不要\n"
                   type: string
                   maxLength: 50
                   pattern: ^(?!(\s|　)*$).+
@@ -1576,20 +1305,14 @@ paths:
                   type: string
                   maxLength: 50
                 divisionIds:
-                  description: |
-                    部署識別番号  
-                    ※ 重複していた場合は1つ目を登録
+                  description: "部署識別番号  \n※ 重複していた場合は1つ目を登録\n"
                   type: array
                   maxItems: 50
                   items:
                     type: integer
                     format: int64
                 positionsOfDivision:
-                  description: |
-                    部署に紐づく役職  
-                    ※ 既存データをリクエストしなかった場合は部署に紐づく役職データは削除  
-                    ※ 所属していない部署IDをリクエストした場合はエラー  
-                    ※ 部署IDが重複していた場合は重複エラー
+                  description: "部署に紐づく役職  \n※ 既存データをリクエストしなかった場合は部署に紐づく役職データは削除  \n※ 所属していない部署IDをリクエストした場合はエラー  \n※ 部署IDが重複していた場合は重複エラー\n"
                   type: array
                   maxItems: 50
                   items:
@@ -1609,9 +1332,7 @@ paths:
                   type: string
                   maxLength: 500
                 pbxPartition:
-                  description: |
-                    パーティション  
-                    ※ CUCM連携利用環境のみ有効
+                  description: "パーティション  \n※ CUCM連携利用環境のみ有効\n"
                   type: string
                   maxLength: 50
                   pattern: ^$|^[0-9A-Za-z _-]+$
@@ -1668,28 +1389,19 @@ paths:
                     required: *ref_7
                   uniqueItems: true
                 groupware:
-                  description: |
-                    グループウェア連携  
-                    ※ 複数のグループウェアの連携が有効になっている環境のみ有効
-                    - M365: Microsoft 365
-                    - GWS: Google Workspace
-                    - NONE: 既存の値を変更せず保持
+                  description: "グループウェア連携  \n※ 複数のグループウェアの連携が有効になっている環境のみ有効\n- M365: Microsoft 365\n- GWS: Google Workspace\n- NONE: 既存の値を変更せず保持\n"
                   type: string
                   enum: &ref_40
                     - M365
                     - GWS
                     - NONE
                 m365Account:
-                  description: |
-                    Microsoft 365 アカウント  
-                    ※ Microsoft 365 連携のいずれかが有効になっている環境のみ有効
+                  description: "Microsoft 365 アカウント  \n※ Microsoft 365 連携のいずれかが有効になっている環境のみ有効\n"
                   type: string
                   maxLength: 256
                   pattern: ^[0-9A-Za-z.\-_@]*$
                 gwsAccount:
-                  description: |
-                    Google Workspace アカウント  
-                    ※ Google Workspace 連携が有効になっている環境のみ有効
+                  description: "Google Workspace アカウント  \n※ Google Workspace 連携が有効になっている環境のみ有効\n"
                   type: string
                   maxLength: 256
                   pattern: ^[0-9A-Za-z.\-'_@]*$
@@ -1702,53 +1414,14 @@ paths:
                   type: string
                   maxLength: 25
                 spCallSettings:
-                  description: |
-                    スマートフォン発信機能  
-                    - DIRECT_CALL: 直接発信（デフォルト値）
-                    - SETTING_1: 発信設定 1
-                    - SETTING_2: 発信設定 2
-                    - SETTING_3: 発信設定 3
-                    - SETTING_4: 発信設定 4
-                    - SETTING_5: 発信設定 5
-                    - SETTING_6: 発信設定 6
-                    - SETTING_7: 発信設定 7
-                    - SETTING_8: 発信設定 8
-                    - SETTING_9: 発信設定 9
-                    - SETTING_10: 発信設定 10
-
-                    ※ 基本利用ユーザ以外に変更する場合は指定不要  
-                    ※ 環境で登録された発信設定のみ有効
+                  description: "スマートフォン発信機能  \n- DIRECT_CALL: 直接発信（デフォルト値）\n- SETTING_1: 発信設定 1\n- SETTING_2: 発信設定 2\n- SETTING_3: 発信設定 3\n- SETTING_4: 発信設定 4\n- SETTING_5: 発信設定 5\n- SETTING_6: 発信設定 6\n- SETTING_7: 発信設定 7\n- SETTING_8: 発信設定 8\n- SETTING_9: 発信設定 9\n- SETTING_10: 発信設定 10\n\n※ 基本利用ユーザ以外に変更する場合は指定不要  \n※ 環境で登録された発信設定のみ有効\n"
                   type: array
                   items:
                     type: string
                     enum: *ref_8
                   uniqueItems: true
                 roles:
-                  description: |
-                    権限コントロール
-                    - ADMIN_COMPANY: 企業情報
-                    - ADMIN_DIVISION: 部署
-                    - ADMIN_USER: ユーザ
-                    - ADMIN_INTERNAL_CONTACT: 社内電話帳
-                    - ADMIN_COMMON_CONTACT: 共有電話帳
-                    - ADMIN_PERSONAL_CONTACT: 個人電話帳
-                    - ADMIN_INFORMATION: お知らせ
-                    - ADMIN_ACTION_LOG: ログ出力
-                    - ADMIN_ACTIVE_DIRECTORY: AD連携
-                    - ADMIN_SANSAN_IMPORT: Sansan連携
-                    - ADMIN_CUCM: CUCM連携
-                    - ADMIN_GOTALK: トーク
-                    - ADMIN_DIAL_PICKUP: ダイヤルピックアップ
-                    - ADMIN_IBASHO: PA PLACE ※1
-                    - ADMIN_CMX: Cisco CMX ※2
-                    - ADMIN_MERAKI: Cisco MERAKI ※2
-                    - ADMIN_EX_BEACON: EXBeacon ※2
-                    - ADMIN_THANKS: PA THANKS
-                    - ADMIN_AZURE_ACTIVE_DIRECTORY: Azure AD連携
-                    - ADMIN_ANPI: 安否
-
-                    ※1 PHONE APPLI PLACE を2019年7月4日以降にご契約の場合、「ADMIN_IBASHO」が有効  
-                    ※2 PHONE APPLI PLACE を2019年7月3日以前にご契約の場合、ご利用中の製品・サービスに該当する権限が有効
+                  description: "権限コントロール\n- ADMIN_COMPANY: 企業情報\n- ADMIN_DIVISION: 部署\n- ADMIN_USER: ユーザ\n- ADMIN_INTERNAL_CONTACT: 社内電話帳\n- ADMIN_COMMON_CONTACT: 共有電話帳\n- ADMIN_PERSONAL_CONTACT: 個人電話帳\n- ADMIN_INFORMATION: お知らせ\n- ADMIN_ACTION_LOG: ログ出力\n- ADMIN_ACTIVE_DIRECTORY: AD連携\n- ADMIN_SANSAN_IMPORT: Sansan連携\n- ADMIN_CUCM: CUCM連携\n- ADMIN_GOTALK: トーク\n- ADMIN_DIAL_PICKUP: ダイヤルピックアップ\n- ADMIN_IBASHO: PA PLACE ※1\n- ADMIN_CMX: Cisco CMX ※2\n- ADMIN_MERAKI: Cisco MERAKI ※2\n- ADMIN_EX_BEACON: EXBeacon ※2\n- ADMIN_THANKS: PA THANKS\n- ADMIN_AZURE_ACTIVE_DIRECTORY: Azure AD連携\n- ADMIN_ANPI: 安否\n\n※1 PHONE APPLI PLACE を2019年7月4日以降にご契約の場合、「ADMIN_IBASHO」が有効  \n※2 PHONE APPLI PLACE を2019年7月3日以前にご契約の場合、ご利用中の製品・サービスに該当する権限が有効\n"
                   type: array
                   items:
                     type: string
@@ -1766,88 +1439,58 @@ paths:
                   type: string
                   enum: *ref_9
                 pbxFeatureAvailable:
-                  description: |
-                    PBX連携  
-                    ※ PBX連携利用環境のみ有効
+                  description: "PBX連携  \n※ PBX連携利用環境のみ有効\n"
                   type: boolean
                 tenantCucmAdapterSettingsId:
-                  description: |
-                    CUCMアダプタ設定識別番号  
-                    ※ 0を指定すると初期化  
-                    ※ CUCM連携利用環境のみ有効
+                  description: "CUCMアダプタ設定識別番号  \n※ 0を指定すると初期化  \n※ CUCM連携利用環境のみ有効\n"
                   type: integer
                   format: int64
                 ctiPort:
-                  description: |
-                    CTIポート  
-                    ※ CUCM連携利用環境のみ有効
+                  description: "CTIポート  \n※ CUCM連携利用環境のみ有効\n"
                   type: string
                   pattern: ^$|^[0-9a-zA-Z._-]+$
                   maxLength: 15
                 incomingPopupIosApns:
-                  description: |
-                    CUCM iPhone着信通知  
-                    ※ CUCM連携利用環境のみ有効
+                  description: "CUCM iPhone着信通知  \n※ CUCM連携利用環境のみ有効\n"
                   type: boolean
                 tenantAvayaAdapterSettingsId:
-                  description: |
-                    Avayaアダプタ設定識別番号  
-                    ※ 0を指定すると初期化  
-                    ※ Avaya連携環境のみ有効
+                  description: "Avayaアダプタ設定識別番号  \n※ 0を指定すると初期化  \n※ Avaya連携環境のみ有効\n"
                   type: integer
                   format: int64
                 gotalkAvailable:
-                  description: |
-                    トーク  
-                    ※ トーク利用環境のみ有効
+                  description: "トーク  \n※ トーク利用環境のみ有効\n"
                   type: boolean
                 gotalkLogDownloadAvailable:
-                  description: |
-                    トークログダウンロード  
-                    ※ トーク利用環境のみ有効
+                  description: "トークログダウンロード  \n※ トーク利用環境のみ有効\n"
                   type: boolean
                 anpiLoginId:
-                  description: |
-                    安否ログインID  
-                    ※ 安否確認利用環境のみ有効
+                  description: "安否ログインID  \n※ 安否確認利用環境のみ有効\n"
                   type: string
                   maxLength: 40
                   pattern: ^[0-9a-zA-Z=^_{}~@.-]*$
                 mobileMacAddress:
-                  description: |
-                    スマートデバイス  
-                    ※ PHONE APPLI PLACE 利用環境のみ有効
+                  description: "スマートデバイス  \n※ PHONE APPLI PLACE 利用環境のみ有効\n"
                   type: string
                   pattern: ^$|^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$
                 pcMacAddress:
-                  description: |
-                    PC  
-                    ※ PHONE APPLI PLACE 利用環境のみ有効
+                  description: "PC  \n※ PHONE APPLI PLACE 利用環境のみ有効\n"
                   type: string
                   pattern: ^$|^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$
                 bleId:
-                  description: |
-                    位置情報タグ  
-                    ※ PHONE APPLI PLACE 利用環境のみ有効
+                  description: "位置情報タグ  \n※ PHONE APPLI PLACE 利用環境のみ有効\n"
                   type: string
                   maxLength: 64
                   pattern: ^[0-9a-zA-Z:_.@-]*$
                 thanksAvailable:
-                  description: |
-                    PA THANKS 利用権限  
-                    ※ PHONE APPLI THANKS 利用環境のみ有効
+                  description: "PA THANKS 利用権限  \n※ PHONE APPLI THANKS 利用環境のみ有効\n"
                   type: boolean
                 officeLinkExtensionNum:
-                  description: |
-                    オフィスリンク内線番号  
-                    ※ オフィスリンク利用環境のみ有効
+                  description: "オフィスリンク内線番号  \n※ オフィスリンク利用環境のみ有効\n"
                   type: string
                   maxLength: 50
                   pattern: '[0-9*#,;+-]*'
                 officeLinkCallSettings:
-                  description: |
-                    オフィスリンク発信設定オブジェクト  
-                    ※ オフィスリンク利用環境のみ有効
+                  description: "オフィスリンク発信設定オブジェクト  \n※ オフィスリンク利用環境のみ有効\n"
                   type: object
                   properties: *ref_10
                   required: *ref_11
@@ -1970,9 +1613,7 @@ paths:
       parameters:
         - name: userId
           in: path
-          description: |
-            取得対象のユーザ識別番号  
-            ※ 自分のプロフィール（マイプロフィール）を取得する場合、ユーザ識別番号の代わりに `me` も有効
+          description: "取得対象のユーザ識別番号  \n※ 自分のプロフィール（マイプロフィール）を取得する場合、ユーザ識別番号の代わりに `me` も有効\n"
           schema:
             type: integer
             format: int64
@@ -2013,9 +1654,7 @@ paths:
                       type: object
                       properties: &ref_42
                         briefHistoryDate:
-                          description: |
-                            日付  
-                            ※ YYYY-MM-DD 形式
+                          description: "日付  \n※ YYYY-MM-DD 形式\n"
                           type: string
                           format: date
                         briefHistoryText:
@@ -2028,9 +1667,7 @@ paths:
                       type: object
                       properties: &ref_43
                         achievementHistoryDate:
-                          description: |
-                            日付  
-                            ※ YYYY-MM-DD 形式
+                          description: "日付  \n※ YYYY-MM-DD 形式\n"
                           type: string
                           format: date
                         achievementHistoryText:
@@ -2065,12 +1702,7 @@ paths:
                           description: 内容
                           type: string
                   selfUpdatedAt:
-                    description: |
-                      更新日時（対象のユーザが自分でプロフィールを更新した日時）  
-                      ※ YYYY-MM-DDThh:mm:ss.SSSTZD 形式
-
-                      次の場合は null が返ります。
-                      - 対象のユーザが、PA PEOPLE のバージョンが 1.50 より前に自分のプロフィールを更新していた場合。
+                    description: "更新日時（対象のユーザが自分でプロフィールを更新した日時）  \n※ YYYY-MM-DDThh:mm:ss.SSSTZD 形式\n\n次の場合は null が返ります。\n- 対象のユーザが、PA PEOPLE のバージョンが 1.50 より前に自分のプロフィールを更新していた場合。\n"
                     type: string
                     format: date-time
                     example: '2019-08-24T14:15:22.323+09:00'
@@ -2082,9 +1714,9 @@ paths:
             - User.Read
     patch:
       summary: プロフィール編集
-      description: |
+      description: |-
         ツール名: Update User Profile
-        説明: ユーザーのプロフィール情報を編集します。
+        説明: ユーザーのプロフィール情報を編集します。指定した項目のみ変更が反映されます。
 
         機能:
         - プロフィール項目の部分更新
@@ -2092,59 +1724,41 @@ paths:
         - 外部リンクの設定
         - カスタマイズ項目の編集
 
-        パラメータ:
-        必須パラメータ（パス）:
-        - userId (integer/string): ユーザ識別番号（または "me" で自分を指定）
+        必須パラメータ:
+        - userId (integer/string): ユーザ識別番号（"me"で自分を指定可能）
 
-        必須パラメータ（リクエストボディ）:
-        - なし（すべてオプション）
-
-        オプションパラメータ（リクエストボディ）:
+        オプションパラメータ:
         - oneWord (string): ひとこと（最大280文字）
         - jobDescription (string): 職務概要（最大280文字）
         - skills (array[string]): スキル（最大20件、各最大100文字）
+          ※指定した順で登録、重複は1つ目のみ、他ユーザの登録済みスキルに統合される
         - toolTechnologies (array[string]): ツール&テクノロジー（最大20件、各最大100文字）
         - qualifications (array[string]): 資格（最大20件、各最大100文字）
-        - briefHistories (array[object]): 略歴（最大30件）
-        - achievementHistories (array[object]): 実績・受賞歴（最大30件）
-        - externalLinks (array[object]): 外部リンク（最大3件）
-        - customColumns (array[object]): カスタマイズ項目（最大3件）
+        - briefHistories (array[object]): 略歴（最大20件）
+          各項目: briefHistoryDate (date), briefHistoryText (string, 最大280文字)
+        - achievementHistories (array[object]): 実績・受賞歴（最大20件）
+          各項目: achievementHistoryDate (date), achievementHistoryText (string, 最大280文字)
+        - externalLinks (array[object]): 外部リンク（最大5件）
+          各項目: externalLinkUrl (string, 最大256文字), externalLinkTitle (string, 最大30文字)
 
-        取得できるデータ:
+        取得データ:
         - 更新後のプロフィール全情報
 
         用途:
-        - プロフィール情報の最新化
-        - スキル情報の追加
+        - プロフィール情報の最新化、スキル情報の追加
         - 実績・受賞歴の更新
-        - 外部リンクの設定
 
         制限:
         - 自分以外のプロフィール編集はユーザ管理権限が必要
         - 編集不可に設定された項目の編集はユーザ管理権限が必要
-        - スキル等は最大20件まで
         - APIキーごとのレート制限適用
-
-        例:
-        PATCH /users/{userId}/profile
-        Content-Type: application/json
-
-        ```json
-        {
-          "oneWord": "チャレンジ精神を大切にしています",
-          "skills": ["プロジェクト管理", "Python", "AWS"],
-          "toolTechnologies": ["GitHub", "Jira", "Slack"]
-        }
-        ```
       operationId: ProfilePatch
       tags:
         - プロフィール
       parameters:
         - name: userId
           in: path
-          description: |
-            編集対象のユーザ識別番号  
-            ※ 自分のプロフィール（マイプロフィール）を編集する場合、ユーザ識別番号の代わりに `me` も有効
+          description: "編集対象のユーザ識別番号  \n※ 自分のプロフィール（マイプロフィール）を編集する場合、ユーザ識別番号の代わりに `me` も有効\n"
           schema:
             type: integer
             format: int64
@@ -2165,12 +1779,7 @@ paths:
                   type: string
                   maxLength: 280
                 skills:
-                  description: |
-                    スキル  
-
-                    ※ 指定した順で登録される。なお、スキルが重複していた場合、1つ目だけが登録される  
-                    ※ 他のユーザが文字種違いのスキルを登録していた場合、既存のスキルの表記に統合される  
-                    （例：他のユーザが「マネジメント」を登録していて、APIで「まねじめんと」を指定した場合、既存の「マネジメント」で登録される）
+                  description: "スキル  \n\n※ 指定した順で登録される。なお、スキルが重複していた場合、1つ目だけが登録される  \n※ 他のユーザが文字種違いのスキルを登録していた場合、既存のスキルの表記に統合される  \n（例：他のユーザが「マネジメント」を登録していて、APIで「まねじめんと」を指定した場合、既存の「マネジメント」で登録される）\n"
                   type: array
                   items:
                     type: string
@@ -2178,12 +1787,7 @@ paths:
                     maxLength: 100
                   maxItems: 20
                 toolTechnologies:
-                  description: |
-                    ツール&テクノロジー   
-
-                    ※ 指定した順で登録される。なお、ツール&テクノロジーが重複していた場合、1つ目だけが登録される  
-                    ※ 他のユーザが文字種違いのツール&テクノロジーを登録していた場合、既存のツール&テクノロジーの表記に統合される  
-                    （例：他のユーザが「Tech X」を登録していて、APIで「tech ｘ」を指定した場合、既存の「Tech X」で登録される）
+                  description: "ツール&テクノロジー   \n\n※ 指定した順で登録される。なお、ツール&テクノロジーが重複していた場合、1つ目だけが登録される  \n※ 他のユーザが文字種違いのツール&テクノロジーを登録していた場合、既存のツール&テクノロジーの表記に統合される  \n（例：他のユーザが「Tech X」を登録していて、APIで「tech ｘ」を指定した場合、既存の「Tech X」で登録される）\n"
                   type: array
                   items:
                     type: string
@@ -2191,12 +1795,7 @@ paths:
                     maxLength: 100
                   maxItems: 20
                 qualifications:
-                  description: |
-                    資格  
-
-                    ※ 指定した順で登録される。なお、資格が重複していた場合、1つ目だけが登録される  
-                    ※ 他のユーザが文字種違いの資格を登録していた場合、既存の資格の表記に統合される  
-                    （例：他のユーザが「社内資格　１級」を登録していて、APIで「社内資格 1級」を指定した場合、既存の「社内資格　１級」で登録される）
+                  description: "資格  \n\n※ 指定した順で登録される。なお、資格が重複していた場合、1つ目だけが登録される  \n※ 他のユーザが文字種違いの資格を登録していた場合、既存の資格の表記に統合される  \n（例：他のユーザが「社内資格　１級」を登録していて、APIで「社内資格 1級」を指定した場合、既存の「社内資格　１級」で登録される）\n"
                   type: array
                   items:
                     type: string
@@ -2210,9 +1809,7 @@ paths:
                     type: object
                     properties: &ref_46
                       briefHistoryDate:
-                        description: |
-                          日付  
-                          ※ YYYY-MM-DD 形式
+                        description: "日付  \n※ YYYY-MM-DD 形式\n"
                         type: string
                         format: date
                       briefHistoryText:
@@ -2231,9 +1828,7 @@ paths:
                     type: object
                     properties: &ref_48
                       achievementHistoryDate:
-                        description: |
-                          日付  
-                          ※ YYYY-MM-DD 形式
+                        description: "日付  \n※ YYYY-MM-DD 形式\n"
                         type: string
                         format: date
                       achievementHistoryText:
@@ -2264,9 +1859,7 @@ paths:
                       - externalLinkUrl
                   maxItems: 3
                 customColumns:
-                  description: |
-                    カスタマイズ項目  
-                    ※ 重複していた場合は1つ目を登録
+                  description: "カスタマイズ項目  \n※ 重複していた場合は1つ目を登録\n"
                   type: array
                   items:
                     type: object
@@ -2342,9 +1935,7 @@ paths:
       parameters:
         - name: userId
           in: path
-          description: |
-            取得対象のユーザ識別番号  
-            ※ 自分の顔写真を取得する場合、ユーザ識別番号の代わりに `me` も有効
+          description: "取得対象のユーザ識別番号  \n※ 自分の顔写真を取得する場合、ユーザ識別番号の代わりに `me` も有効\n"
           schema:
             type: integer
             format: int64
@@ -2379,9 +1970,7 @@ paths:
             - User.Read
     put:
       summary: 顔写真更新
-      description: |
-        社内電話帳に登録された連絡先（ユーザ）の顔写真を更新できます。  
-        ※ ご利用にはユーザ管理権限が必要です。
+      description: "社内電話帳に登録された連絡先（ユーザ）の顔写真を更新できます。  \n※ ご利用にはユーザ管理権限が必要です。\n"
       operationId: PhotoPut
       tags:
         - 社内連絡先
@@ -2435,9 +2024,7 @@ paths:
             - User.Write
     delete:
       summary: 顔写真削除
-      description: |
-        社内電話帳に登録された連絡先（ユーザ）の顔写真を削除できます。  
-        ※ ご利用にはユーザ管理権限が必要です。
+      description: "社内電話帳に登録された連絡先（ユーザ）の顔写真を削除できます。  \n※ ご利用にはユーザ管理権限が必要です。\n"
       operationId: PhotoDelete
       tags:
         - 社内連絡先
@@ -2613,9 +2200,7 @@ paths:
             - Division.Read
     post:
       summary: 部署作成
-      description: |
-        部署を作成できます。  
-        ※ ご利用には部署管理権限が必要です。
+      description: "部署を作成できます。  \n※ ご利用には部署管理権限が必要です。\n"
       operationId: DivisionsPost
       tags:
         - 部署
@@ -2627,9 +2212,7 @@ paths:
               type: object
               properties: &ref_56
                 parentDivisionId:
-                  description: |
-                    親部署識別番号  
-                    ※ 所属する親部署がない場合は指定不要
+                  description: "親部署識別番号  \n※ 所属する親部署がない場合は指定不要\n"
                   type: integer
                   format: int64
                   minimum: 1
@@ -2745,9 +2328,7 @@ paths:
             - Division.Read
     patch:
       summary: 部署編集
-      description: |
-        部署の情報を編集できます。指定した項目のみ変更が反映されます。  
-        ※ ご利用には部署管理権限が必要です。
+      description: "部署の情報を編集できます。指定した項目のみ変更が反映されます。  \n※ ご利用には部署管理権限が必要です。\n"
       operationId: DivisionsDivisionIdPatch
       tags:
         - 部署
@@ -2767,9 +2348,7 @@ paths:
               type: object
               properties: &ref_58
                 parentDivisionId:
-                  description: |
-                    親部署識別番号  
-                    ※ 所属する親部署がない場合は0を指定
+                  description: "親部署識別番号  \n※ 所属する親部署がない場合は0を指定\n"
                   type: integer
                   format: int64
                   minimum: 0
@@ -2823,9 +2402,7 @@ paths:
             - Division.Write
     delete:
       summary: 部署削除
-      description: |
-        部署を削除できます。**親部署を削除した場合、配下に含まれる部署も削除されます。**  
-        ※ ご利用には部署管理権限が必要です。
+      description: "部署を削除できます。**親部署を削除した場合、配下に含まれる部署も削除されます。**  \n※ ご利用には部署管理権限が必要です。\n"
       operationId: DivisionsDivisionIdDelete
       parameters:
         - name: divisionId
@@ -2910,9 +2487,7 @@ paths:
                     type: object
                     properties:
                       loginId:
-                        description: |
-                          ログインID  
-                          ※ 重複指定不可
+                        description: "ログインID  \n※ 重複指定不可\n"
                         type: string
                         maxLength: 254
                         pattern: ^[@a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+$
@@ -2932,9 +2507,7 @@ paths:
                         maximum: 6
                         example: 0
                       destinationName:
-                        description: |
-                          臨時の行き先名  
-                          ※ destinationId が 0 の場合は必須
+                        description: "臨時の行き先名  \n※ destinationId が 0 の場合は必須\n"
                         type: string
                         minLength: 1
                         maxLength: 20
@@ -2971,7 +2544,7 @@ paths:
   /externalContacts:
     get:
       summary: 社外連絡先一覧取得
-      description: |
+      description: |-
         ツール名: List External Contacts
         説明: 社外電話帳（共有/個人）に登録された連絡先の情報を一覧で取得します。
 
@@ -2984,68 +2557,32 @@ paths:
         - ソート順の指定（更新日時順、氏名カナ順）
 
         パラメータ:
-        必須パラメータ:
-        - なし
-
-        オプションパラメータ（クエリ）:
-        - page (integer): 取得対象ページの番号 (デフォルト: 0, 最小: 0, 最大: 19)
-        - pageSize (integer): 1ページあたりの件数 (デフォルト: 30, 最小: 1, 最大: 500)
-        - select (array[string]): 取得対象項目（contactId, companyName, fullname, email1など）
+        - page (integer): ページ番号 (デフォルト: 0, 最大: 19)
+        - pageSize (integer): 1ページあたりの件数 (デフォルト: 30, 最大: 500)
+        - select (array[string]): 取得対象項目
         - orderBy (string): ソート順 (updatedAt/fullname, デフォルト: updatedAt)
-        - orderDirection (string): ソート方向 (asc/desc, デフォルト: asc)
-        - updatedFrom (string): 更新日時 from (YYYY-MM-DDThh:mm:ss.SSSTZD形式)
-        - updatedTo (string): 更新日時 to (YYYY-MM-DDThh:mm:ss.SSSTZD形式)
-        - registeredUserId (integer): 登録者のユーザ識別番号
-        - fullname (string): 氏名（部分一致, 最大50文字）
-        - fullnameKana (string): 氏名カナ（部分一致, 最大50文字）
-        - phoneNum (string): 電話番号（最大50文字, パターン: [0-9*#,;+-]*）
-        - email (string): メールアドレス（完全一致, 最大256文字）
-        - companyName (string): 会社名（部分一致, 最大200文字）
-        - companyNameKana (string): 会社名カナ（部分一致, 最大200文字）
-        - divisionName (string): 部署名（部分一致, 最大50文字）
-        - divisionNameKana (string): 部署名カナ（部分一致, 最大50文字）
-        - freeWords (array[string]): フリーワード（カンマ区切りでAND検索, 最大10件）
+        - orderDirection: ソート方向 (asc/desc)
         - directory (string): 電話帳タイプ (SHARED/PERSONAL)
+        - folderNum (integer): フォルダ識別番号（最小: 1）
+        - fullname/fullnameKana: 氏名（部分一致、最大50文字）
+        - companyName/companyNameKana: 会社名（部分一致、最大200文字）
+        - phoneNum: 電話番号（最大50文字）、email: メールアドレス（完全一致、最大256文字）
+        - updatedAtFrom/updatedAtTo: 更新日時範囲 (YYYY-MM-DDThh:mm:ss.SSSTZD形式)
+        - freeWords: フリーワード検索（AND検索、最大10件、各最大50文字）
 
-        取得できるデータ:
-        - 連絡先識別番号、フォルダID
-        - 会社名、会社名カナ、会社代表電話番号、会社URL
-        - 本社所在地
-        - 部署名、部署名カナ、部署代表電話番号、部署URL
-        - 事業所所在地
-        - 役職、氏名、氏名カナ、氏名英字
-        - 電話番号、会社携帯番号、個人携帯番号、FAX番号
-        - メールアドレス1・2、Web URL
-        - コメント、備考
-        - OCR情報（ステータス、タイプ、結果）
-        - 連絡先詳細URL、登録者情報、登録日時、更新日時
+        取得データ:
+        - 連絡先識別番号、会社名、氏名、電話番号、メールアドレス
+        - 部署情報、役職、住所
+        - 更新日時、名刺情報
 
         用途:
-        - 取引先や顧客の連絡先管理
-        - 名刺情報の一元管理
-        - 営業活動のための連絡先検索
-        - CRMシステムとの連携
+        - 取引先情報の管理、名刺情報の活用
+        - 外部連絡先データベースの構築
 
         制限:
-        - 閲覧権限があるフォルダ内の連絡先のみ取得可能
-        - フリーワード検索時は他の検索条件と同時指定不可
+        - 権限範囲内のフォルダのみ取得可能
         - 1ページあたり最大500件
         - APIキーごとのレート制限適用
-
-        例:
-        ```
-        # 全社外連絡先を取得
-        GET /externalContacts?page=0&pageSize=30
-
-        # 会社名で検索
-        GET /externalContacts?companyName=株式会社
-
-        # 更新日時範囲で検索
-        GET /externalContacts?updatedFrom=2024-01-01T00:00:00.000+09:00&updatedTo=2024-12-31T23:59:59.999+09:00
-
-        # フリーワード検索
-        GET /externalContacts?freeWords=山田,営業
-        ```
       operationId: ExternalContactsGet
       tags:
         - 社外連絡先
@@ -3123,29 +2660,20 @@ paths:
             default: updatedAt
         - name: orderDirection
           in: query
-          description: |
-            ソートの並び順
-            - asc: 昇順  
-            - desc: 降順
+          description: "ソートの並び順\n- asc: 昇順  \n- desc: 降順\n"
           schema:
             type: string
             enum: *ref_14
             default: asc
         - name: updatedFrom
           in: query
-          description: |
-            更新日時 from  
-            ※ YYYY-MM-DDThh:mm:ss.SSSTZD 形式  
-            ※ updatedTo 以前の日時
+          description: "更新日時 from  \n※ YYYY-MM-DDThh:mm:ss.SSSTZD 形式  \n※ updatedTo 以前の日時\n"
           schema:
             type: string
             format: date-time
         - name: updatedTo
           in: query
-          description: |
-            更新日時 to  
-            ※ YYYY-MM-DDThh:mm:ss.SSSTZD 形式  
-            ※ updatedFrom 以降の日時
+          description: "更新日時 to  \n※ YYYY-MM-DDThh:mm:ss.SSSTZD 形式  \n※ updatedFrom 以降の日時\n"
           schema:
             type: string
             format: date-time
@@ -3169,11 +2697,7 @@ paths:
             maxLength: 50
         - name: phoneNum
           in: query
-          description: |
-            取得対象の電話番号  
-            ※ PA PEOPLEでは、電話番号は「+」（先頭以外）と「-」を含まない書式で登録されている  
-            （例：APIで「+81-3-1234-5678」を指定した場合、「+81312345678」と登録されている連絡先を取得できる）  
-            ※ 部分一致検索不可
+          description: "取得対象の電話番号  \n※ PA PEOPLEでは、電話番号は「+」（先頭以外）と「-」を含まない書式で登録されている  \n（例：APIで「+81-3-1234-5678」を指定した場合、「+81312345678」と登録されている連絡先を取得できる）  \n※ 部分一致検索不可\n"
           schema:
             type: string
             maxLength: 50
@@ -3210,19 +2734,7 @@ paths:
             maxLength: 50
         - name: freeWords
           in: query
-          description: |
-            フリーワード検索  
-            ※ カンマ区切りで AND 検索  
-            ※ 次の項目との同時指定不可
-            - registeredUserId
-            - fullname
-            - fullnameKana
-            - phoneNum
-            - email
-            - companyName
-            - companyNameKana
-            - divisionName
-            - divisionNameKana
+          description: "フリーワード検索  \n※ カンマ区切りで AND 検索  \n※ 次の項目との同時指定不可\n- registeredUserId\n- fullname\n- fullnameKana\n- phoneNum\n- email\n- companyName\n- companyNameKana\n- divisionName\n- divisionNameKana\n"
           schema:
             type: array
             items:
@@ -3245,9 +2757,7 @@ paths:
               - PERSONAL
         - name: folderNums
           in: query
-          description: |
-            取得対象のフォルダ識別番号  
-            ※ directory の指定必須
+          description: "取得対象のフォルダ識別番号  \n※ directory の指定必須\n"
           schema:
             type: array
             items:
@@ -3304,9 +2814,7 @@ paths:
               - FAILURE
         - name: identified
           in: query
-          description: |
-            取得対象を名寄せ後の連絡先のみに限定  
-            ※ registeredUserId との同時指定不可
+          description: "取得対象を名寄せ後の連絡先のみに限定  \n※ registeredUserId との同時指定不可\n"
           schema:
             type: boolean
             default: false
@@ -3465,9 +2973,7 @@ paths:
                           description: 連絡先詳細のURL
                           type: string
                         registeredUser:
-                          description: |
-                            登録者  
-                            ※ 社内連絡先から削除されている場合や閲覧権限がない場合の値はnull
+                          description: "登録者  \n※ 社内連絡先から削除されている場合や閲覧権限がない場合の値はnull\n"
                           type: object
                           properties: &ref_63
                             userId:
@@ -3494,16 +3000,12 @@ paths:
                                     description: 部署名
                                     type: string
                         registeredAt:
-                          description: |
-                            登録日時  
-                            ※ YYYY-MM-DDThh:mm:ssTZD 形式
+                          description: "登録日時  \n※ YYYY-MM-DDThh:mm:ssTZD 形式\n"
                           type: string
                           format: date-time
                           example: '2019-08-24T14:15:22+09:00'
                         updatedAt:
-                          description: |
-                            更新日時  
-                            ※ YYYY-MM-DDThh:mm:ss.SSSTZD 形式
+                          description: "更新日時  \n※ YYYY-MM-DDThh:mm:ss.SSSTZD 形式\n"
                           type: string
                           format: date-time
                           example: '2019-08-24T14:15:22.323+09:00'
@@ -3515,9 +3017,7 @@ paths:
             - ExternalContacts.Read
     post:
       summary: 社外連絡先作成
-      description: |
-        社外連絡先（共有/個人）を作成できます。  
-        作成できるのは、編集権限があるフォルダ内の連絡先です。
+      description: "社外連絡先（共有/個人）を作成できます。  \n作成できるのは、編集権限があるフォルダ内の連絡先です。\n"
       operationId: ExternalContactsPost
       tags:
         - 社外連絡先
@@ -3698,7 +3198,7 @@ paths:
   /externalContacts/{contactId}:
     patch:
       summary: 社外連絡先編集
-      description: |
+      description: |-
         ツール名: Update External Contact
         説明: 社外連絡先（共有/個人）の情報を編集します。指定した項目のみ変更が反映されます。
 
@@ -3709,63 +3209,40 @@ paths:
         - 個人情報（氏名、役職、電話番号、メールアドレス）の編集
         - コメント・備考の編集
 
-        パラメータ:
-        必須パラメータ（パス）:
+        必須パラメータ:
         - contactId (integer): 編集対象の社外連絡先識別番号
 
-        必須パラメータ（リクエストボディ）:
-        - なし（すべてオプション）
-
-        オプションパラメータ（リクエストボディ）:
+        オプションパラメータ:
         - companyName (string): 会社名（最大200文字）
-        - companyNameKana (string): 会社名カナ（最大200文字）
-        - companyDelegatedPhoneNum (string): 会社代表番号（最大50文字, パターン: [0-9*#,;+-]*）
-        - companyUrl (string): 会社URL（最大256文字）
-        - headquartersLocation (object): 本社所在地
-        - divisionName (string): 部署名（最大50文字）
-        - divisionNameKana (string): 部署名カナ（最大50文字）
-        - divisionDelegatedPhoneNum (string): 部署代表番号（最大50文字, パターン: [0-9*#,;+-]*）
-        - divisionUrl (string): 部署URL（最大256文字）
-        - officeLocation (object): オフィス所在地
-        - position (string): 役職（最大100文字）
-        - fullname (string): 氏名（最大50文字）
-        - fullnameKana (string): 氏名カナ（最大50文字）
-        - fullnameAlphabet (string): 氏名英字（最大50文字）
-        - phoneNum (string): 電話番号（最大50文字, パターン: [0-9*#,;+-]*）
-        - companyMobileNum (string): 会社携帯番号（最大50文字, パターン: [0-9*#,;+-]*）
-        - personalMobileNum (string): 個人携帯番号（最大50文字, パターン: [0-9*#,;+-]*）
-        - mobileNum (string): 携帯番号（最大50文字, パターン: [0-9*#,;+-]*）
-        - faxNum (string): FAX番号（最大50文字, パターン: [0-9*#,;+-]*）
-        - email1 (string): メールアドレス1（最大256文字）
-        - email2 (string): メールアドレス2（最大256文字）
-        - webUrl (string): Web URL（最大256文字）
-        - comment (string): コメント（最大300文字）
-        - remarks (string): 備考（最大1000文字）
+        - companyNameKana: 会社名カナ（最大200文字）
+        - companyDelegatedPhoneNum: 会社代表番号（最大50文字）
+        - companyUrl: 会社URL（最大256文字）
+        - companyAddress: 会社本社所在地（最大500文字）
+        - departmentName: 部署名（最大50文字）
+        - departmentNameKana: 部署名カナ（最大50文字）
+        - departmentDelegatedPhoneNum: 部署代表電話（最大50文字）
+        - departmentUrl: 部署URL（最大256文字）
+        - departmentAddress: 部署事業所所在地（最大500文字）
+        - fullname: 氏名（最大50文字）
+        - fullnameKana: 氏名カナ（最大50文字）
+        - position: 役職（最大50文字）
+        - phoneNum: 電話番号（最大50文字）
+        - mobilePhoneNum: 携帯番号（最大50文字）
+        - faxNum: FAX番号（最大50文字）
+        - email: メールアドレス（最大256文字）
+        - comment: コメント（最大1000文字）
+        - remarks: 備考（最大1000文字）
 
-        取得できるデータ:
+        取得データ:
         - 更新後の社外連絡先全情報
 
         用途:
-        - 名刺情報の更新
-        - 取引先情報の変更（組織変更、担当者変更等）
-        - 連絡先情報の修正
-        - 顧客データベースのメンテナンス
+        - 名刺情報の最新化、取引先情報の更新
 
         制限:
-        - 編集権限があるフォルダ内の連絡先のみ編集可能
+        - 編集権限が必要
+        - 共有電話帳の場合はフォルダの編集権限が必要
         - APIキーごとのレート制限適用
-
-        例:
-        PATCH /externalContacts/{contactId}
-        Content-Type: application/json
-
-        ```json
-        {
-          "fullname": "山田 太郎",
-          "email1": "yamada@example.com",
-          "companyMobileNum": "+819012345678"
-        }
-        ```
       operationId: ExternalContactsPatch
       tags:
         - 社外連絡先
@@ -3907,11 +3384,7 @@ paths:
             - ExternalContacts.Write
     delete:
       summary: 社外連絡先削除
-      description: |
-        社外連絡先（共有/個人）の情報を削除できます。  
-        削除できるのは、編集権限があるフォルダ内の連絡先です。  
-        ※ 名刺画像も含まれます。  
-        ※ グループに当該連絡先が登録されている場合は、グループからも削除されます。
+      description: "社外連絡先（共有/個人）の情報を削除できます。  \n削除できるのは、編集権限があるフォルダ内の連絡先です。  \n※ 名刺画像も含まれます。  \n※ グループに当該連絡先が登録されている場合は、グループからも削除されます。\n"
       operationId: ExternalContactsDelete
       tags:
         - 社外連絡先
@@ -3935,7 +3408,7 @@ paths:
   /externalContacts/businessCard:
     post:
       summary: 名刺読み取り
-      description: |
+      description: |-
         ツール名: Create Contact from Business Card
         説明: 名刺画像をOCR読み取りして社外連絡先を作成します。
 
@@ -3946,48 +3419,34 @@ paths:
         - 共有/個人電話帳への登録
         - AI読み取り（オプション）
 
-        パラメータ:
-        必須パラメータ（リクエストボディ - multipart/form-data）:
-        - businessCardImage (binary): 名刺画像ファイル（推奨上限: 6MB, 形式: JPEG/PNG/GIF）
-        - directory (string): 登録先の電話帳タイプ (SHARED/PERSONAL)
+        必須パラメータ（multipart/form-data）:
+        - businessCardImage (binary): 名刺画像ファイル
+          推奨上限: 6MB、形式: JPEG/PNG/GIF
+          ※画像サイズ: 縦400px以上、横600px以上推奨
+        - directory (string): 登録先の電話帳タイプ
+          SHARED: 共有電話帳、PERSONAL: 個人電話帳
         - folderNum (integer): 登録先のフォルダ識別番号（最小: 1）
 
-        オプションパラメータ（リクエストボディ - multipart/form-data）:
-        - autoCrop (boolean): 名刺画像の自動トリミング (デフォルト: false, divideImageと同時指定不可)
-        - divideImage (boolean): 複数の名刺が含まれる画像を分割 (デフォルト: false, 最大21分割)
-        - readerType (string): 読み取り方法 (STANDARD/AI, デフォルト: STANDARD)
-        - comment (string): コメント（最大300文字）
-        - remarks (string): 備考（最大1000文字）
+        オプションパラメータ（multipart/form-data）:
+        - autoCrop (boolean): 名刺画像の自動トリミング (デフォルト: false)
+          ※divideImageと同時指定不可
+        - divideImage (boolean): 名刺画像の分割読み取り (デフォルト: false)
+          ※最大21分割、autoCropと同時指定不可
+        - aiRead (boolean): AI読み取り (デフォルト: false)
+          ※自動読み取り精度が向上、OCR処理時間が長くなる可能性あり
 
-        取得できるデータ:
-        - 作成された社外連絡先情報
-        - OCR読み取り結果
-        - 連絡先識別番号
+        取得データ:
+        - 作成された社外連絡先情報（contactId、会社名、氏名、電話番号、メールアドレス等）
 
         用途:
-        - 名刺の自動デジタル化
-        - 営業活動後の連絡先登録の効率化
-        - 紙の名刺から電子データへの変換
-        - 大量の名刺の一括登録
+        - 名刺のデジタル化、連絡先登録の自動化
+        - 名刺交換後の即時登録
 
         制限:
-        - 登録権限があるフォルダのみ指定可能
-        - 推奨画像サイズ: 上限6MB
-        - 対応形式: JPEG, PNG, GIF
-        - 分割読み取り: 最大21分割
-        - 分割読み取り時の制約: 名刺が重なっていない、鮮明、背景とのコントラスト十分
+        - 画像ファイルサイズ制限あり
+        - テナントごとのリクエスト数上限あり（名刺読み取りAPIの月間上限）
+        - OCR精度は画像品質に依存
         - APIキーごとのレート制限適用
-
-        例:
-        ```
-        POST /externalContacts/businessCard
-        Content-Type: multipart/form-data
-
-        businessCardImage: [binary data]
-        directory: SHARED
-        folderNum: 100
-        readerType: AI
-        ```
       operationId: BusinessCardPost
       tags:
         - 社外連絡先
@@ -4021,24 +3480,11 @@ paths:
                   format: int64
                   minimum: 1
                 autoCrop:
-                  description: |
-                    名刺画像の自動トリミング  
-                    ※ divideImage との同時指定不可
+                  description: "名刺画像の自動トリミング  \n※ divideImage との同時指定不可\n"
                   type: boolean
                   default: false
                 divideImage:
-                  description: |
-                    複数の名刺が含まれる画像を分割  
-                    ※ 最大21分割  
-                    ※ 次の項目との同時指定不可
-                    - autoCrop
-                    - comment
-                    - remarks
-
-                    自動分割できない画像
-                    - 名刺が重なっている
-                    - 画像が鮮明でない
-                    - 名刺と背景（黒推奨）のコントラストが不十分
+                  description: "複数の名刺が含まれる画像を分割  \n※ 最大21分割  \n※ 次の項目との同時指定不可\n- autoCrop\n- comment\n- remarks\n\n自動分割できない画像\n- 名刺が重なっている\n- 画像が鮮明でない\n- 名刺と背景（黒推奨）のコントラストが不十分\n"
                   type: boolean
                   default: false
                 readerType:
@@ -4062,17 +3508,11 @@ paths:
                     - ENGLISH
                   default: JAPANESE
                 comment:
-                  description: |
-                    コメント  
-                    ※ 指定した内容はそのまま連絡先に登録される（OCR・オペレータの読み取り対象外）  
-                    ※ divideImage との同時指定不可
+                  description: "コメント  \n※ 指定した内容はそのまま連絡先に登録される（OCR・オペレータの読み取り対象外）  \n※ divideImage との同時指定不可\n"
                   type: string
                   maxLength: 500
                 remarks:
-                  description: |
-                    備考  
-                    ※ 指定した内容はそのまま連絡先に登録される（OCR・オペレータの読み取り対象外）  
-                    ※ divideImage との同時指定不可
+                  description: "備考  \n※ 指定した内容はそのまま連絡先に登録される（OCR・オペレータの読み取り対象外）  \n※ divideImage との同時指定不可\n"
                   type: string
                   maxLength: 500
               required:
@@ -4089,9 +3529,7 @@ paths:
                 type: object
                 properties:
                   contactId:
-                    description: |
-                      社外連絡先識別番号  
-                      ※ 画像分割機能が有効な場合、分割後の連絡先には別の社外連絡先識別番号が付与されます
+                    description: "社外連絡先識別番号  \n※ 画像分割機能が有効な場合、分割後の連絡先には別の社外連絡先識別番号が付与されます\n"
                     type: integer
                     format: int64
         default:
@@ -4165,9 +3603,7 @@ paths:
             - ExternalContacts.Read
     put:
       summary: 名刺画像更新
-      description: |
-        社外電話帳（共有/個人）に登録された連絡先の名刺画像を更新できます。  
-        更新できるのは、編集権限があるフォルダ内の連絡先の名刺画像です。
+      description: "社外電話帳（共有/個人）に登録された連絡先の名刺画像を更新できます。  \n更新できるのは、編集権限があるフォルダ内の連絡先の名刺画像です。\n"
       operationId: BusinessCardPut
       tags:
         - 社外連絡先
@@ -4224,9 +3660,7 @@ paths:
             - ExternalContacts.Write
     delete:
       summary: 名刺画像削除
-      description: |
-        社外電話帳（共有/個人）に登録された連絡先の名刺画像を削除できます。  
-        削除できるのは、編集権限があるフォルダ内の連絡先の名刺画像です。
+      description: "社外電話帳（共有/個人）に登録された連絡先の名刺画像を削除できます。  \n削除できるのは、編集権限があるフォルダ内の連絡先の名刺画像です。\n"
       operationId: BusinessCardDelete
       tags:
         - 社外連絡先
@@ -4490,14 +3924,10 @@ paths:
                           description: フォルダ名
                           type: string
                         description:
-                          description: |
-                            説明  
-                            ※ 共有電話帳管理権限と対象フォルダの編集権限をお持ちの場合のみ取得（お持ちでない場合はnull）
+                          description: "説明  \n※ 共有電話帳管理権限と対象フォルダの編集権限をお持ちの場合のみ取得（お持ちでない場合はnull）\n"
                           type: string
                         tenantPublic:
-                          description: |
-                            全社公開  
-                            ※ 共有電話帳管理権限と対象フォルダの編集権限をお持ちの場合のみ取得（お持ちでない場合はnull）
+                          description: "全社公開  \n※ 共有電話帳管理権限と対象フォルダの編集権限をお持ちの場合のみ取得（お持ちでない場合はnull）\n"
                           type: boolean
         default:
           description: エラーの場合
@@ -4507,9 +3937,7 @@ paths:
             - ExternalContacts.Read
     post:
       summary: 共有電話帳フォルダ作成
-      description: |
-        共有電話帳フォルダを作成できます。  
-        ※ ご利用には共有電話帳管理権限が必要です。
+      description: "共有電話帳フォルダを作成できます。  \n※ ご利用には共有電話帳管理権限が必要です。\n"
       operationId: SharedContactsFoldersPost
       tags:
         - 社外電話帳フォルダ
@@ -4777,10 +4205,7 @@ paths:
             - ExternalContacts.Read
     patch:
       summary: フォルダの部署権限編集
-      description: |
-        共有電話帳フォルダの部署ごとの閲覧・編集権限を編集できます。  
-        ※ ご利用には共有電話帳管理権限が必要です。  
-        ※ 編集権限をお持ちのフォルダのみ編集できます。
+      description: "共有電話帳フォルダの部署ごとの閲覧・編集権限を編集できます。  \n※ ご利用には共有電話帳管理権限が必要です。  \n※ 編集権限をお持ちのフォルダのみ編集できます。\n"
       operationId: SharedContactsFolderDivisionAuthoritiesPatch
       tags:
         - 社外電話帳フォルダ
@@ -4815,15 +4240,11 @@ paths:
                     type: object
                     properties:
                       divisionId:
-                        description: |
-                          部署識別番号  
-                          ※ 重複指定不可
+                        description: "部署識別番号  \n※ 重複指定不可\n"
                         type: integer
                         format: int64
                       viewable:
-                        description: |
-                          閲覧権限  
-                          ※ editable が true の場合は、true のみ指定可能
+                        description: "閲覧権限  \n※ editable が true の場合は、true のみ指定可能\n"
                         type: boolean
                       editable:
                         description: 編集権限
@@ -4974,10 +4395,7 @@ paths:
             - ExternalContacts.Read
     patch:
       summary: フォルダのユーザ権限編集
-      description: |
-        共有電話帳フォルダのユーザごとの閲覧・編集権限を編集できます。  
-        ※ ご利用には共有電話帳管理権限が必要です。  
-        ※ 編集権限をお持ちのフォルダのみ編集できます。
+      description: "共有電話帳フォルダのユーザごとの閲覧・編集権限を編集できます。  \n※ ご利用には共有電話帳管理権限が必要です。  \n※ 編集権限をお持ちのフォルダのみ編集できます。\n"
       operationId: SharedContactsFolderUserAuthoritiesPatch
       tags:
         - 社外電話帳フォルダ
@@ -5012,15 +4430,11 @@ paths:
                     type: object
                     properties:
                       userId:
-                        description: |
-                          ユーザ識別番号  
-                          ※ 重複指定不可
+                        description: "ユーザ識別番号  \n※ 重複指定不可\n"
                         type: integer
                         format: int64
                       viewable:
-                        description: |
-                          閲覧権限  
-                          ※ editable が true の場合は、true のみ指定可能
+                        description: "閲覧権限  \n※ editable が true の場合は、true のみ指定可能\n"
                         type: boolean
                       editable:
                         description: 編集権限
@@ -5190,10 +4604,7 @@ paths:
                   maxLength: 50
                   pattern: ^(?!(\s|　)*$).+
                 ownerUserId:
-                  description: |
-                    フォルダの所有者のユーザ識別番号  
-                    ※ 指定には個人電話帳管理権限が必要  
-                    ※ 未指定の場合のフォルダの所有者は自分
+                  description: "フォルダの所有者のユーザ識別番号  \n※ 指定には個人電話帳管理権限が必要  \n※ 未指定の場合のフォルダの所有者は自分\n"
                   type: integer
                   format: int64
                 sortScore:
@@ -5391,14 +4802,10 @@ paths:
                           description: 表示名
                           type: string
                         companyName:
-                          description: |
-                            会社名  
-                            ※社内連絡先、社外連絡先（共有/個人）のみ有効
+                          description: "会社名  \n※社内連絡先、社外連絡先（共有/個人）のみ有効\n"
                           type: string
                         divisionNames:
-                          description: |
-                            部署名  
-                            ※社内連絡先、社外連絡先（共有/個人）のみ有効
+                          description: "部署名  \n※社内連絡先、社外連絡先（共有/個人）のみ有効\n"
                           type: array
                           items:
                             type: string
@@ -5416,15 +4823,11 @@ paths:
                             - EXTERNAL_SHARED
                             - EXTERNAL_PERSONAL
                         userId:
-                          description: |
-                            ユーザ識別番号  
-                            ※ 社内連絡先のみ有効
+                          description: "ユーザ識別番号  \n※ 社内連絡先のみ有効\n"
                           type: integer
                           format: int64
                         contactId:
-                          description: |
-                            社外連絡先識別番号  
-                            ※ 社外連絡先（共有/個人）のみ有効
+                          description: "社外連絡先識別番号  \n※ 社外連絡先（共有/個人）のみ有効\n"
                           type: integer
                           format: int64
         default:
@@ -5513,10 +4916,7 @@ paths:
             default: 20
         - name: orderDirection
           in: query
-          description: |
-            着信日時でのソートの並び順
-            - asc: 昇順  
-            - desc: 降順
+          description: "着信日時でのソートの並び順\n- asc: 昇順  \n- desc: 降順\n"
           schema:
             type: string
             enum: *ref_14
@@ -5562,14 +4962,10 @@ paths:
                               description: 表示名
                               type: string
                             companyName:
-                              description: |
-                                会社名  
-                                ※ 社内連絡先、社外連絡先（共有/個人）のみ有効
+                              description: "会社名  \n※ 社内連絡先、社外連絡先（共有/個人）のみ有効\n"
                               type: string
                             divisionNames:
-                              description: |
-                                部署名  
-                                ※ 社内連絡先、社外連絡先（共有/個人）のみ有効
+                              description: "部署名  \n※ 社内連絡先、社外連絡先（共有/個人）のみ有効\n"
                               type: array
                               items:
                                 type: string
@@ -5583,15 +4979,11 @@ paths:
                                 - EXTERNAL_PERSONAL: 社外連絡先（個人電話帳）
                               enum: *ref_25
                             userId:
-                              description: |
-                                ユーザ識別番号  
-                                ※ 社内連絡先のみ有効
+                              description: "ユーザ識別番号  \n※ 社内連絡先のみ有効\n"
                               type: integer
                               format: int64
                             contactId:
-                              description: |
-                                社外連絡先識別番号  
-                                ※ 社外連絡先（共有/個人）のみ有効
+                              description: "社外連絡先識別番号  \n※ 社外連絡先（共有/個人）のみ有効\n"
                               type: integer
                               format: int64
                         answered:
@@ -5624,9 +5016,7 @@ paths:
                           description: メモ
                           type: string
                         calledAt:
-                          description: |
-                            着信日時  
-                            ※ YYYY-MM-DDThh:mm:ssTZD 形式
+                          description: "着信日時  \n※ YYYY-MM-DDThh:mm:ssTZD 形式\n"
                           type: string
                           format: date-time
                           example: '2019-08-24T14:15:22+09:00'
@@ -5650,9 +5040,7 @@ paths:
               type: object
               properties: &ref_77
                 fromNum:
-                  description: |
-                    発信元電話番号  
-                    ※ 非通知着信の場合は指定不要
+                  description: "発信元電話番号  \n※ 非通知着信の場合は指定不要\n"
                   type: string
                   maxLength: 50
                   pattern: '[0-9*#,;+-]+'
@@ -5663,17 +5051,12 @@ paths:
                     * false: 不在
                   type: boolean
                 duration:
-                  description: |
-                    通話時間（秒）  
-                    ※ answered が true の場合は必須  
-                    ※ answered が false の場合は指定不要
+                  description: "通話時間（秒）  \n※ answered が true の場合は必須  \n※ answered が false の場合は指定不要\n"
                   type: integer
                   format: int32
                   minimum: 0
                 calledAt:
-                  description: |
-                    着信日時  
-                    ※ YYYY-MM-DDThh:mm:ssTZD 形式
+                  description: "着信日時  \n※ YYYY-MM-DDThh:mm:ssTZD 形式\n"
                   type: string
                   format: date-time
                   example: '2019-08-24T14:15:22+09:00'
@@ -5778,9 +5161,7 @@ paths:
               type: object
               properties: &ref_79
                 fromNum:
-                  description: |
-                    発信元電話番号  
-                    ※ 非通知着信の場合は空文字
+                  description: "発信元電話番号  \n※ 非通知着信の場合は空文字\n"
                   type: string
                   maxLength: 50
                   pattern: '[0-9*#,;+-]*'
@@ -5791,17 +5172,12 @@ paths:
                     * false: 不在
                   type: boolean
                 duration:
-                  description: |
-                    通話時間（秒）  
-                    ※ answered が true の場合は必須  
-                    ※ answered が false の場合は指定不要
+                  description: "通話時間（秒）  \n※ answered が true の場合は必須  \n※ answered が false の場合は指定不要\n"
                   type: integer
                   format: int32
                   minimum: 0
                 calledAt:
-                  description: |
-                    着信日時  
-                    ※ YYYY-MM-DDThh:mm:ssTZD 形式
+                  description: "着信日時  \n※ YYYY-MM-DDThh:mm:ssTZD 形式\n"
                   type: string
                   format: date-time
                   example: '2019-08-24T14:15:22+09:00'
@@ -5907,10 +5283,7 @@ paths:
             default: 20
         - name: orderDirection
           in: query
-          description: |
-            発信日時でのソートの並び順
-            - asc: 昇順  
-            - desc: 降順
+          description: "発信日時でのソートの並び順\n- asc: 昇順  \n- desc: 降順\n"
           schema:
             type: string
             enum: *ref_14
@@ -5956,14 +5329,10 @@ paths:
                               description: 表示名
                               type: string
                             companyName:
-                              description: |
-                                会社名  
-                                ※社内連絡先、社外連絡先（共有/個人）のみ有効
+                              description: "会社名  \n※社内連絡先、社外連絡先（共有/個人）のみ有効\n"
                               type: string
                             divisionNames:
-                              description: |
-                                部署名  
-                                ※社内連絡先、社外連絡先（共有/個人）のみ有効
+                              description: "部署名  \n※社内連絡先、社外連絡先（共有/個人）のみ有効\n"
                               type: array
                               items:
                                 type: string
@@ -5977,15 +5346,11 @@ paths:
                                 - EXTERNAL_PERSONAL: 社外連絡先（個人電話帳）
                               enum: *ref_25
                             userId:
-                              description: |
-                                ユーザ識別番号  
-                                ※ 社内連絡先のみ有効
+                              description: "ユーザ識別番号  \n※ 社内連絡先のみ有効\n"
                               type: integer
                               format: int64
                             contactId:
-                              description: |
-                                社外連絡先識別番号  
-                                ※ 社外連絡先（共有/個人）のみ有効
+                              description: "社外連絡先識別番号  \n※ 社外連絡先（共有/個人）のみ有効\n"
                               type: integer
                               format: int64
                         answered:
@@ -6002,9 +5367,7 @@ paths:
                           description: メモ
                           type: string
                         callingAt:
-                          description: |
-                            発信日時  
-                            ※ YYYY-MM-DDThh:mm:ssTZD 形式
+                          description: "発信日時  \n※ YYYY-MM-DDThh:mm:ssTZD 形式\n"
                           type: string
                           format: date-time
                           example: '2019-08-24T14:15:22+09:00'
@@ -6039,17 +5402,12 @@ paths:
                     * false: 不在
                   type: boolean
                 duration:
-                  description: |
-                    通話時間（秒）  
-                    ※ answered が true の場合は必須  
-                    ※ answered が false の場合は指定不要
+                  description: "通話時間（秒）  \n※ answered が true の場合は必須  \n※ answered が false の場合は指定不要\n"
                   type: integer
                   format: int32
                   minimum: 0
                 callingAt:
-                  description: |
-                    発信日時  
-                    ※ YYYY-MM-DDThh:mm:ssTZD 形式
+                  description: "発信日時  \n※ YYYY-MM-DDThh:mm:ssTZD 形式\n"
                   type: string
                   format: date-time
                   example: '2019-08-24T14:15:22+09:00'
@@ -6148,17 +5506,12 @@ paths:
                     * false: 不在
                   type: boolean
                 duration:
-                  description: |
-                    通話時間（秒）  
-                    ※ answered が true の場合は必須  
-                    ※ answered が false の場合は指定不要
+                  description: "通話時間（秒）  \n※ answered が true の場合は必須  \n※ answered が false の場合は指定不要\n"
                   type: integer
                   format: int32
                   minimum: 0
                 callingAt:
-                  description: |
-                    発信日時  
-                    ※ YYYY-MM-DDThh:mm:ssTZD 形式
+                  description: "発信日時  \n※ YYYY-MM-DDThh:mm:ssTZD 形式\n"
                   type: string
                   format: date-time
                   example: '2019-08-24T14:15:22+09:00'
@@ -6226,31 +5579,7 @@ paths:
                 type: object
                 properties:
                   roles:
-                    description: |
-                      権限コントロール
-                      - ADMIN_COMPANY: 企業情報
-                      - ADMIN_DIVISION: 部署
-                      - ADMIN_USER: ユーザ
-                      - ADMIN_INTERNAL_CONTACT: 社内電話帳
-                      - ADMIN_COMMON_CONTACT: 共有電話帳
-                      - ADMIN_PERSONAL_CONTACT: 個人電話帳
-                      - ADMIN_INFORMATION: お知らせ
-                      - ADMIN_ACTION_LOG: ログ出力
-                      - ADMIN_ACTIVE_DIRECTORY: AD連携
-                      - ADMIN_SANSAN_IMPORT: Sansan連携
-                      - ADMIN_CUCM: CUCM連携
-                      - ADMIN_GOTALK: トーク
-                      - ADMIN_DIAL_PICKUP: ダイヤルピックアップ
-                      - ADMIN_IBASHO: PA PLACE ※1
-                      - ADMIN_CMX: Cisco CMX ※2
-                      - ADMIN_MERAKI: Cisco MERAKI ※2
-                      - ADMIN_EX_BEACON: EXBeacon ※2
-                      - ADMIN_THANKS: PA THANKS
-                      - ADMIN_AZURE_ACTIVE_DIRECTORY: Azure AD連携
-                      - ADMIN_ANPI: 安否
-
-                      ※1 PHONE APPLI PLACE を2019年7月4日以降にご契約の場合、「ADMIN_IBASHO」が有効  
-                      ※2 PHONE APPLI PLACE を2019年7月3日以前にご契約の場合、ご利用中の製品・サービスに該当する権限が有効
+                    description: "権限コントロール\n- ADMIN_COMPANY: 企業情報\n- ADMIN_DIVISION: 部署\n- ADMIN_USER: ユーザ\n- ADMIN_INTERNAL_CONTACT: 社内電話帳\n- ADMIN_COMMON_CONTACT: 共有電話帳\n- ADMIN_PERSONAL_CONTACT: 個人電話帳\n- ADMIN_INFORMATION: お知らせ\n- ADMIN_ACTION_LOG: ログ出力\n- ADMIN_ACTIVE_DIRECTORY: AD連携\n- ADMIN_SANSAN_IMPORT: Sansan連携\n- ADMIN_CUCM: CUCM連携\n- ADMIN_GOTALK: トーク\n- ADMIN_DIAL_PICKUP: ダイヤルピックアップ\n- ADMIN_IBASHO: PA PLACE ※1\n- ADMIN_CMX: Cisco CMX ※2\n- ADMIN_MERAKI: Cisco MERAKI ※2\n- ADMIN_EX_BEACON: EXBeacon ※2\n- ADMIN_THANKS: PA THANKS\n- ADMIN_AZURE_ACTIVE_DIRECTORY: Azure AD連携\n- ADMIN_ANPI: 安否\n\n※1 PHONE APPLI PLACE を2019年7月4日以降にご契約の場合、「ADMIN_IBASHO」が有効  \n※2 PHONE APPLI PLACE を2019年7月3日以前にご契約の場合、ご利用中の製品・サービスに該当する権限が有効\n"
                     type: array
                     items:
                       type: string
@@ -6379,9 +5708,7 @@ paths:
                     type: object
                     properties:
                       bleId:
-                        description: |
-                          位置情報タグ  
-                          ※ 重複していた場合は最後のものを登録
+                        description: "位置情報タグ  \n※ 重複していた場合は最後のものを登録\n"
                         type: string
                         maxLength: 64
                         pattern: ^[0-9a-zA-Z:_.@-]+$
@@ -6481,14 +5808,7 @@ paths:
                     format: int64
                   minItems: 1
                   maxItems: 20
-                  description: |
-                    宛先のユーザ識別番号  
-                    ※ 宛先のユーザが次に該当する場合は指定不可  
-                    - PA THANKS 利用権限が無効  
-                    - アカウントが無効  
-                    - カードの差出人  
-
-                    ※ 宛先が複数の場合、ユーザ識別番号は重複指定不可
+                  description: "宛先のユーザ識別番号  \n※ 宛先のユーザが次に該当する場合は指定不可  \n- PA THANKS 利用権限が無効  \n- アカウントが無効  \n- カードの差出人  \n\n※ 宛先が複数の場合、ユーザ識別番号は重複指定不可\n"
                   example:
                     - 5
                 message:
@@ -6572,15 +5892,11 @@ components:
       type: string
       enum: *ref_9
     tenantCucmAdapterSettings:
-      description: |
-        CUCMアダプタ設定  
-        ※ CUCM連携利用環境のみ有効
+      description: "CUCMアダプタ設定  \n※ CUCM連携利用環境のみ有効\n"
       type: object
       properties: *ref_33
     tenantAvayaAdapterSettings:
-      description: |
-        Avayaアダプタ設定  
-        ※ Avaya連携環境のみ有効
+      description: "Avayaアダプタ設定  \n※ Avaya連携環境のみ有効\n"
       type: object
       properties: *ref_34
     user:
@@ -6596,12 +5912,7 @@ components:
       properties: *ref_6
       required: *ref_7
     groupwareForCommandDefault:
-      description: |
-        グループウェア連携  
-        ※ 複数のグループウェアの連携が有効になっている環境のみ有効
-        - M365: Microsoft 365
-        - GWS: Google Workspace
-        - NONE: Microsoft 365
+      description: "グループウェア連携  \n※ 複数のグループウェアの連携が有効になっている環境のみ有効\n- M365: Microsoft 365\n- GWS: Google Workspace\n- NONE: Microsoft 365\n"
       type: string
       enum: *ref_35
       default: M365
@@ -6620,9 +5931,7 @@ components:
       enum: *ref_37
       default: DISABLE
     officeLinkCallSettings:
-      description: |
-        オフィスリンク発信設定オブジェクト  
-        ※ オフィスリンク利用環境のみ有効
+      description: "オフィスリンク発信設定オブジェクト  \n※ オフィスリンク利用環境のみ有効\n"
       type: object
       properties: *ref_10
       required: *ref_11
@@ -6631,12 +5940,7 @@ components:
       properties: *ref_38
       required: *ref_39
     groupwareForCommand:
-      description: |
-        グループウェア連携  
-        ※ 複数のグループウェアの連携が有効になっている環境のみ有効
-        - M365: Microsoft 365
-        - GWS: Google Workspace
-        - NONE: 既存の値を変更せず保持
+      description: "グループウェア連携  \n※ 複数のグループウェアの連携が有効になっている環境のみ有効\n- M365: Microsoft 365\n- GWS: Google Workspace\n- NONE: 既存の値を変更せず保持\n"
       type: string
       enum: *ref_40
     userPatchCommand:
@@ -6744,9 +6048,7 @@ components:
       type: object
       properties: *ref_62
     registeredUser:
-      description: |
-        登録者  
-        ※ 社内連絡先から削除されている場合や閲覧権限がない場合の値はnull
+      description: "登録者  \n※ 社内連絡先から削除されている場合や閲覧権限がない場合の値はnull\n"
       type: object
       properties: *ref_63
     externalContact:
