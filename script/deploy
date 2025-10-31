@@ -138,25 +138,11 @@ if [ "${ENVIRONMENT}" == "sandbox" ]; then
 else
     echo "  Backend URL: https://api.phoneappli.net/v1"
 fi
-echo ""
-
-# Get subscription key
-echo "==> Retrieving subscription key..."
-SUBSCRIPTION_KEY=$(az apim subscription list \
-    --resource-group "${RESOURCE_GROUP}" \
-    --service-name "${APIM_NAME}" \
-    --query "[?state=='active'] | [0].primaryKey" \
-    --output tsv)
-
-if [ -z "${SUBSCRIPTION_KEY}" ]; then
-    echo -e "${YELLOW}Warning: Could not retrieve subscription key automatically${NC}"
-    SUBSCRIPTION_KEY="<your-subscription-key>"
-fi
 
 echo ""
 echo "Next steps:"
 echo "  1. Test the API:"
-echo "     curl -H 'Ocp-Apim-Subscription-Key: ${SUBSCRIPTION_KEY}' \\"
+echo "     curl -H 'Ocp-Apim-Subscription-Key: <your-subscription-key>' \\"
 echo "          -H 'X-Pa-Api-Key: <your-api-key>' \\"
 echo "          '${APIM_ENDPOINT}/phoneappli/users?page=0&pageSize=30'"
 echo ""
