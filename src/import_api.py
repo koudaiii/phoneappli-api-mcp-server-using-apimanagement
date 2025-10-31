@@ -70,26 +70,32 @@ def get_api_info_from_spec(file_path: Path) -> dict[str, Any]:
     }
 
 
-def generate_api_policy(environment: str) -> str:
+def generate_api_policy() -> str:
     """
-    Generate API-level policy XML with X-Pa-Api-Key header.
-
-    Args:
-        environment: Target environment ('sandbox' or 'production')
+    Generate API-level policy XML that validates X-Pa-Api-Key header.
 
     Returns:
         Policy XML string
     """
-    # Map environment to Named Value
-    named_value = f"phoneappli-api-key-{environment}"
-
-    policy_xml = f"""<policies>
+    policy_xml = """<policies>
     <inbound>
         <base />
-        <!-- Add PHONE APPLI API Key header for backend authentication -->
-        <set-header name="X-Pa-Api-Key" exists-action="override">
-            <value>{{{{"{named_value}"}}}}</value>
-        </set-header>
+        <!-- Check if X-Pa-Api-Key header exists -->
+        <choose>
+            <when condition="@(context.Request.Headers.GetValueOrDefault(&quot;X-Pa-Api-Key&quot;,&quot;&quot;) == &quot;&quot;)">
+                <return-response>
+                    <set-status code="401" reason="Unauthorized" />
+                    <set-header name="Content-Type" exists-action="override">
+                        <value>application/json</value>
+                    </set-header>
+                    <set-body>@{
+                        return new JObject(
+                            new JProperty("error", "X-Pa-Api-Key header is required")
+                        ).ToString();
+                    }</set-body>
+                </return-response>
+            </when>
+        </choose>
     </inbound>
     <backend>
         <base />
@@ -209,9 +215,9 @@ def import_api_to_apim(
 
             progress.update(task, completed=True)
 
-        # Set API-level policy with X-Pa-Api-Key header
-        console.print(f"\n[cyan]Configuring API policy for {environment} environment...[/cyan]")
-        policy_xml = generate_api_policy(environment)
+        # Set API-level policy to validate X-Pa-Api-Key header
+        console.print("\n[cyan]Configuring API policy to validate X-Pa-Api-Key header...[/cyan]")
+        policy_xml = generate_api_policy()
 
         with Progress(
             SpinnerColumn(),
