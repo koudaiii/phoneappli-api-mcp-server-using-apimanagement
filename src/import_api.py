@@ -70,16 +70,24 @@ def get_api_info_from_spec(file_path: Path) -> dict[str, Any]:
     }
 
 
-def generate_api_policy() -> str:
+def generate_api_policy(environment: str = "sandbox") -> str:
     """
     Generate API-level policy XML that validates X-Pa-Api-Key header.
+
+    Args:
+        environment: The environment (sandbox or production) for named value reference
 
     Returns:
         Policy XML string
     """
-    policy_xml = """<policies>
+    named_value = f"phoneappli-api-key-{environment}"
+    policy_xml = f"""<policies>
     <inbound>
         <base />
+        <!-- Set X-Pa-Api-Key header from named value -->
+        <set-header name="X-Pa-Api-Key" exists-action="override">
+            <value>{{{{{{{{phoneappli-api-key-{environment}}}}}}}}}</value>
+        </set-header>
         <!-- Check if X-Pa-Api-Key header exists -->
         <choose>
             <when condition="@(context.Request.Headers.GetValueOrDefault(&quot;X-Pa-Api-Key&quot;,&quot;&quot;) == &quot;&quot;)">
@@ -88,11 +96,11 @@ def generate_api_policy() -> str:
                     <set-header name="Content-Type" exists-action="override">
                         <value>application/json</value>
                     </set-header>
-                    <set-body>@{
+                    <set-body>@{{
                         return new JObject(
                             new JProperty("error", "X-Pa-Api-Key header is required")
                         ).ToString();
-                    }</set-body>
+                    }}</set-body>
                 </return-response>
             </when>
         </choose>
@@ -217,7 +225,7 @@ def import_api_to_apim(
 
         # Set API-level policy to validate X-Pa-Api-Key header
         console.print("\n[cyan]Configuring API policy to validate X-Pa-Api-Key header...[/cyan]")
-        policy_xml = generate_api_policy()
+        policy_xml = generate_api_policy(environment)
 
         with Progress(
             SpinnerColumn(),
