@@ -2960,8 +2960,80 @@ paths:
     get:
       summary: 社外連絡先一覧取得
       description: |
-        社外電話帳（共有/個人）に登録された連絡先の情報を一覧で取得できます。  
-        取得できるのは、閲覧権限があるフォルダ内の連絡先です。
+        ツール名: List External Contacts
+        説明: 社外電話帳（共有/個人）に登録された連絡先の情報を一覧で取得します。
+
+        機能:
+        - ページネーションによる大量データの取得
+        - 会社名、氏名、電話番号、メールアドレスでのフィルタリング
+        - フリーワード検索（AND検索対応）
+        - 更新日時範囲での絞り込み
+        - 共有/個人電話帳の選択
+        - ソート順の指定（更新日時順、氏名カナ順）
+
+        パラメータ:
+        必須パラメータ:
+        - なし
+
+        オプションパラメータ（クエリ）:
+        - page (integer): 取得対象ページの番号 (デフォルト: 0, 最小: 0, 最大: 19)
+        - pageSize (integer): 1ページあたりの件数 (デフォルト: 30, 最小: 1, 最大: 500)
+        - select (array[string]): 取得対象項目（contactId, companyName, fullname, email1など）
+        - orderBy (string): ソート順 (updatedAt/fullname, デフォルト: updatedAt)
+        - orderDirection (string): ソート方向 (asc/desc, デフォルト: asc)
+        - updatedFrom (string): 更新日時 from (YYYY-MM-DDThh:mm:ss.SSSTZD形式)
+        - updatedTo (string): 更新日時 to (YYYY-MM-DDThh:mm:ss.SSSTZD形式)
+        - registeredUserId (integer): 登録者のユーザ識別番号
+        - fullname (string): 氏名（部分一致, 最大50文字）
+        - fullnameKana (string): 氏名カナ（部分一致, 最大50文字）
+        - phoneNum (string): 電話番号（最大50文字, パターン: [0-9*#,;+-]*）
+        - email (string): メールアドレス（完全一致, 最大256文字）
+        - companyName (string): 会社名（部分一致, 最大200文字）
+        - companyNameKana (string): 会社名カナ（部分一致, 最大200文字）
+        - divisionName (string): 部署名（部分一致, 最大50文字）
+        - divisionNameKana (string): 部署名カナ（部分一致, 最大50文字）
+        - freeWords (array[string]): フリーワード（カンマ区切りでAND検索, 最大10件）
+        - directory (string): 電話帳タイプ (SHARED/PERSONAL)
+
+        取得できるデータ:
+        - 連絡先識別番号、フォルダID
+        - 会社名、会社名カナ、会社代表電話番号、会社URL
+        - 本社所在地
+        - 部署名、部署名カナ、部署代表電話番号、部署URL
+        - 事業所所在地
+        - 役職、氏名、氏名カナ、氏名英字
+        - 電話番号、会社携帯番号、個人携帯番号、FAX番号
+        - メールアドレス1・2、Web URL
+        - コメント、備考
+        - OCR情報（ステータス、タイプ、結果）
+        - 連絡先詳細URL、登録者情報、登録日時、更新日時
+
+        用途:
+        - 取引先や顧客の連絡先管理
+        - 名刺情報の一元管理
+        - 営業活動のための連絡先検索
+        - CRMシステムとの連携
+
+        制限:
+        - 閲覧権限があるフォルダ内の連絡先のみ取得可能
+        - フリーワード検索時は他の検索条件と同時指定不可
+        - 1ページあたり最大500件
+        - APIキーごとのレート制限適用
+
+        例:
+        ```
+        # 全社外連絡先を取得
+        GET /externalContacts?page=0&pageSize=30
+
+        # 会社名で検索
+        GET /externalContacts?companyName=株式会社
+
+        # 更新日時範囲で検索
+        GET /externalContacts?updatedFrom=2024-01-01T00:00:00.000+09:00&updatedTo=2024-12-31T23:59:59.999+09:00
+
+        # フリーワード検索
+        GET /externalContacts?freeWords=山田,営業
+        ```
       operationId: ExternalContactsGet
       tags:
         - 社外連絡先
