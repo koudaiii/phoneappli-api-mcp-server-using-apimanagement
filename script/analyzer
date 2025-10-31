@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -e
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+OPENAPI_SPEC_PATH="${OPENAPI_SPEC_PATH:-./docs/v1.20.0.yaml}"
+
+
+uv run python src/analyze_descriptions.py ${OPENAPI_SPEC_PATH}
