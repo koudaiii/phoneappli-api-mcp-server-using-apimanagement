@@ -6279,10 +6279,57 @@ paths:
     patch:
       summary: 位置情報登録
       description: |
-        位置情報タグごとのスポット情報を一括して登録できます。  
-        ※ 登録したスポット情報は 10 分後に削除されます。  
-        ※ ご利用には PHONE APPLI PLACE 管理権限が必要です。  
-        ※ レート制限（リクエスト上限）：テナントごと 5 分間に 1 回（エラーの場合はリクエスト数にカウントされません）
+        ツール名: Register Location
+        説明: 位置情報タグごとのスポット情報を一括して登録します（PHONE APPLI PLACE連携機能）。
+
+        機能:
+        - 位置情報タグごとのスポット登録
+        - 複数スポットの一括登録
+        - GPS座標情報の記録
+
+        パラメータ:
+        必須パラメータ（リクエストボディ）:
+        - array[object]: 位置情報タグとスポット情報の配列
+          - tagId (string): 位置情報タグID
+          - spots (array[object]): スポット情報配列
+            - latitude (number): 緯度
+            - longitude (number): 経度
+            - spotName (string): スポット名
+
+        オプションパラメータ:
+        - なし
+
+        取得できるデータ:
+        - 登録成功時はステータスコード204のみ
+
+        用途:
+        - 位置情報管理
+        - 従業員の現在地追跡
+        - フィールドワーク管理
+        - 訪問先管理
+
+        制限:
+        - PHONE APPLI PLACE機能が有効な場合のみ利用可能
+        - PHONE APPLI PLACE 管理権限が必要
+        - 登録したスポット情報は10分後に自動削除
+        - レート制限: テナントごと5分間に1回
+        - APIキーごとのレート制限適用
+
+        例:
+        ```json
+        [
+          {
+            "tagId": "tag001",
+            "spots": [
+              {
+                "latitude": 35.6812,
+                "longitude": 139.7671,
+                "spotName": "東京オフィス"
+              }
+            ]
+          }
+        ]
+        ```
       operationId: LocationsPatch
       tags:
         - 位置情報
