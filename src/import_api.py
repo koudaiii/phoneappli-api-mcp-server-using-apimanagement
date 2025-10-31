@@ -80,7 +80,6 @@ def generate_api_policy(environment: str = "sandbox") -> str:
     Returns:
         Policy XML string
     """
-    named_value = f"phoneappli-api-key-{environment}"
     policy_xml = f"""<policies>
     <inbound>
         <base />
