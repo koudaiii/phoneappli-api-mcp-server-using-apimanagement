@@ -20,10 +20,6 @@ param tags object
 @allowed(['sandbox', 'production'])
 param environment string
 
-@description('PHONE APPLI API Key')
-@secure()
-param phoneAppliApiKey string
-
 // Module: API Management Service using Azure Verified Module (AVM)
 module apimService 'br/public:avm/res/api-management/service:0.9.0' = {
   name: 'apim-deployment'
@@ -48,17 +44,6 @@ module apimService 'br/public:avm/res/api-management/service:0.9.0' = {
     managedIdentities: {
       systemAssigned: true
     }
-
-    // Named Values (for API keys)
-    // Create a Named Value for the selected environment
-    namedValues: [
-      {
-        name: environment == 'sandbox' ? 'phoneappli-api-key-sandbox' : 'phoneappli-api-key-production'
-        displayName: environment == 'sandbox' ? 'phoneappli-api-key-sandbox' : 'phoneappli-api-key-production'
-        secret: true
-        value: phoneAppliApiKey
-      }
-    ]
 
     // Global API settings
     // Note: API-specific policies (including X-Pa-Api-Key header) are set at the API level during import
