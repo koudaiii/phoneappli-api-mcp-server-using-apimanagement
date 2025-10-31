@@ -1,0 +1,260 @@
+#!/usr/bin/env bash
+set -e
+
+YAML_FILE="docs/v1.20.0.yaml"
+
+echo "Fixing descriptions in ${YAML_FILE} (keeping more details, under 950 chars)..."
+echo
+
+# 1. POST /users (617 -> aim for ~940 chars)
+echo "✓ Updating POST /users"
+yq eval '.paths."/users".post.description = "ツール名: Create Internal Contact
+説明: 新しい社内連絡先（ユーザ）を作成します。
+
+機能:
+- 基本利用ユーザー、登録限定ユーザー、施設・備品の3タイプに対応
+- ログインID、パスワード、氏名などの必須項目設定
+- 部署割り当て、役職設定
+- 各種連携サービス（Microsoft 365、Google Workspace、PBXなど）の設定
+- 権限コントロールの付与
+
+必須パラメータ:
+- loginId (string): ログインID（最大254文字）
+- fullname (string): 氏名（最大50文字）
+- password (string): パスワード（基本利用ユーザーの場合必須、最大50文字）
+
+主なオプションパラメータ:
+- userType: ユーザタイプ (REGULAR_USER/REGISTRATION_ONLY_USER/FACILITY)
+- enabled: アカウント有効/無効
+- divisionIds: 部署識別番号、employeeNum: 社員番号、position: 役職
+- email1/email2: メールアドレス、phoneNum: 電話番号
+- extensionNum: 内線番号、companyMobileNum: 会社携帯、personalMobileNum: 個人携帯
+- roles: 権限コントロール、paapiAvailable: API利用権限
+- groupware: グループウェア連携 (M365/GWS)、m365Account/gwsAccount
+
+取得できるデータ:
+- 作成されたユーザーの全情報（ユーザー識別番号を含む）
+
+用途:
+- 新入社員のアカウント作成、一括ユーザー登録の自動化
+- 外部システムとの連携によるユーザープロビジョニング
+
+制限:
+- ユーザ管理権限が必要
+- ユーザタイプによって設定可能な項目が異なる
+- APIキーごとのレート制限適用"' -i "${YAML_FILE}"
+
+# 2. GET /users (777 -> aim for ~940 chars)
+echo "✓ Updating GET /users"
+yq eval '.paths."/users".get.description = "ツール名: List Internal Contacts
+説明: 社内電話帳に登録された連絡先（ユーザ）の情報を一覧で取得します。
+
+機能:
+- ページネーションによる大量データの取得
+- 部署、氏名、電話番号などでのフィルタリング
+- フリーワード検索（AND検索対応）
+- ソート順の指定（氏名カナ、ソートスコア、社員番号）
+- ユーザータイプでの絞り込み
+
+パラメータ:
+- page (integer): ページ番号 (デフォルト: 0)
+- pageSize (integer): 1ページあたりの件数 (デフォルト: 30, 最大: 100)
+- select (array[string]): 取得対象項目（権限範囲の項目のみ指定可能）
+- orderBy (string): ソート順 (fullname/sortScore/employeeNum)
+- orderDirection (string): ソート方向 (asc/desc)
+- userType: ユーザタイプ (REGULAR_USER/REGISTRATION_ONLY_USER/FACILITY)
+- divisionIds: 部署識別番号（最大50件）、includeSubDepartment: 配下の部署を含む
+- fullname/fullnameKana: 氏名（部分一致）
+- phoneNum: 電話番号、email1: メールアドレス
+- userIds: ユーザ識別番号、loginIds: ログインID、employeeNum: 社員番号
+- freeWords: フリーワード検索（AND検索、最大10件、各最大50文字）
+
+取得データ:
+- ユーザー識別番号、ログインID、社員番号
+- 氏名、部署情報、役職、職務
+- 内線番号、携帯番号、メールアドレス
+- 権限情報、各種連携設定
+
+用途:
+- 組織内の全ユーザー情報の取得と表示
+- 特定条件でのユーザー検索
+
+制限:
+- 権限範囲内の項目のみ取得可能
+- フリーワード検索時は最大10,000件まで
+- APIキーごとのレート制限適用"' -i "${YAML_FILE}"
+
+# 3. PATCH /users/{userId}/profile (641 -> aim for ~940 chars)
+echo "✓ Updating PATCH /users/{userId}/profile"
+yq eval '.paths."/users/{userId}/profile".patch.description = "ツール名: Update User Profile
+説明: ユーザーのプロフィール情報を編集します。指定した項目のみ変更が反映されます。
+
+機能:
+- プロフィール項目の部分更新
+- スキル、資格、略歴等の追加・変更
+- 外部リンクの設定
+- カスタマイズ項目の編集
+
+必須パラメータ:
+- userId (integer/string): ユーザ識別番号（\"me\"で自分を指定可能）
+
+オプションパラメータ:
+- oneWord (string): ひとこと（最大280文字）
+- jobDescription (string): 職務概要（最大280文字）
+- skills (array[string]): スキル（最大20件、各最大100文字）
+  ※指定した順で登録、重複は1つ目のみ、他ユーザの登録済みスキルに統合される
+- toolTechnologies (array[string]): ツール&テクノロジー（最大20件、各最大100文字）
+- qualifications (array[string]): 資格（最大20件、各最大100文字）
+- briefHistories (array[object]): 略歴（最大20件）
+  各項目: briefHistoryDate (date), briefHistoryText (string, 最大280文字)
+- achievementHistories (array[object]): 実績・受賞歴（最大20件）
+  各項目: achievementHistoryDate (date), achievementHistoryText (string, 最大280文字)
+- externalLinks (array[object]): 外部リンク（最大5件）
+  各項目: externalLinkUrl (string, 最大256文字), externalLinkTitle (string, 最大30文字)
+
+取得データ:
+- 更新後のプロフィール全情報
+
+用途:
+- プロフィール情報の最新化、スキル情報の追加
+- 実績・受賞歴の更新
+
+制限:
+- 自分以外のプロフィール編集はユーザ管理権限が必要
+- 編集不可に設定された項目の編集はユーザ管理権限が必要
+- APIキーごとのレート制限適用"' -i "${YAML_FILE}"
+
+# 4. GET /externalContacts (683 -> aim for ~940 chars)
+echo "✓ Updating GET /externalContacts"
+yq eval '.paths."/externalContacts".get.description = "ツール名: List External Contacts
+説明: 社外電話帳（共有/個人）に登録された連絡先の情報を一覧で取得します。
+
+機能:
+- ページネーションによる大量データの取得
+- 会社名、氏名、電話番号、メールアドレスでのフィルタリング
+- フリーワード検索（AND検索対応）
+- 更新日時範囲での絞り込み
+- 共有/個人電話帳の選択
+- ソート順の指定（更新日時順、氏名カナ順）
+
+パラメータ:
+- page (integer): ページ番号 (デフォルト: 0, 最大: 19)
+- pageSize (integer): 1ページあたりの件数 (デフォルト: 30, 最大: 500)
+- select (array[string]): 取得対象項目
+- orderBy (string): ソート順 (updatedAt/fullname, デフォルト: updatedAt)
+- orderDirection: ソート方向 (asc/desc)
+- directory (string): 電話帳タイプ (SHARED/PERSONAL)
+- folderNum (integer): フォルダ識別番号（最小: 1）
+- fullname/fullnameKana: 氏名（部分一致、最大50文字）
+- companyName/companyNameKana: 会社名（部分一致、最大200文字）
+- phoneNum: 電話番号（最大50文字）、email: メールアドレス（完全一致、最大256文字）
+- updatedAtFrom/updatedAtTo: 更新日時範囲 (YYYY-MM-DDThh:mm:ss.SSSTZD形式)
+- freeWords: フリーワード検索（AND検索、最大10件、各最大50文字）
+
+取得データ:
+- 連絡先識別番号、会社名、氏名、電話番号、メールアドレス
+- 部署情報、役職、住所
+- 更新日時、名刺情報
+
+用途:
+- 取引先情報の管理、名刺情報の活用
+- 外部連絡先データベースの構築
+
+制限:
+- 権限範囲内のフォルダのみ取得可能
+- 1ページあたり最大500件
+- APIキーごとのレート制限適用"' -i "${YAML_FILE}"
+
+# 5. PATCH /externalContacts/{contactId} (572 -> aim for ~940 chars)
+echo "✓ Updating PATCH /externalContacts/{contactId}"
+yq eval '.paths."/externalContacts/{contactId}".patch.description = "ツール名: Update External Contact
+説明: 社外連絡先（共有/個人）の情報を編集します。指定した項目のみ変更が反映されます。
+
+機能:
+- 連絡先情報の部分更新
+- 会社情報（会社名、代表電話、URL、本社所在地）の編集
+- 部署情報（部署名、代表電話、URL、事業所所在地）の編集
+- 個人情報（氏名、役職、電話番号、メールアドレス）の編集
+- コメント・備考の編集
+
+必須パラメータ:
+- contactId (integer): 編集対象の社外連絡先識別番号
+
+オプションパラメータ:
+- companyName (string): 会社名（最大200文字）
+- companyNameKana: 会社名カナ（最大200文字）
+- companyDelegatedPhoneNum: 会社代表番号（最大50文字）
+- companyUrl: 会社URL（最大256文字）
+- companyAddress: 会社本社所在地（最大500文字）
+- departmentName: 部署名（最大50文字）
+- departmentNameKana: 部署名カナ（最大50文字）
+- departmentDelegatedPhoneNum: 部署代表電話（最大50文字）
+- departmentUrl: 部署URL（最大256文字）
+- departmentAddress: 部署事業所所在地（最大500文字）
+- fullname: 氏名（最大50文字）
+- fullnameKana: 氏名カナ（最大50文字）
+- position: 役職（最大50文字）
+- phoneNum: 電話番号（最大50文字）
+- mobilePhoneNum: 携帯番号（最大50文字）
+- faxNum: FAX番号（最大50文字）
+- email: メールアドレス（最大256文字）
+- comment: コメント（最大1000文字）
+- remarks: 備考（最大1000文字）
+
+取得データ:
+- 更新後の社外連絡先全情報
+
+用途:
+- 名刺情報の最新化、取引先情報の更新
+
+制限:
+- 編集権限が必要
+- 共有電話帳の場合はフォルダの編集権限が必要
+- APIキーごとのレート制限適用"' -i "${YAML_FILE}"
+
+# 6. POST /externalContacts/businessCard (616 -> aim for ~940 chars)
+echo "✓ Updating POST /externalContacts/businessCard"
+yq eval '.paths."/externalContacts/businessCard".post.description = "ツール名: Create Contact from Business Card
+説明: 名刺画像をOCR読み取りして社外連絡先を作成します。
+
+機能:
+- 名刺画像のOCR読み取り
+- 自動トリミング機能
+- 複数名刺の一括分割読み取り（最大21分割）
+- 共有/個人電話帳への登録
+- AI読み取り（オプション）
+
+必須パラメータ（multipart/form-data）:
+- businessCardImage (binary): 名刺画像ファイル
+  推奨上限: 6MB、形式: JPEG/PNG/GIF
+  ※画像サイズ: 縦400px以上、横600px以上推奨
+- directory (string): 登録先の電話帳タイプ
+  SHARED: 共有電話帳、PERSONAL: 個人電話帳
+- folderNum (integer): 登録先のフォルダ識別番号（最小: 1）
+
+オプションパラメータ（multipart/form-data）:
+- autoCrop (boolean): 名刺画像の自動トリミング (デフォルト: false)
+  ※divideImageと同時指定不可
+- divideImage (boolean): 名刺画像の分割読み取り (デフォルト: false)
+  ※最大21分割、autoCropと同時指定不可
+- aiRead (boolean): AI読み取り (デフォルト: false)
+  ※自動読み取り精度が向上、OCR処理時間が長くなる可能性あり
+
+取得データ:
+- 作成された社外連絡先情報（contactId、会社名、氏名、電話番号、メールアドレス等）
+
+用途:
+- 名刺のデジタル化、連絡先登録の自動化
+- 名刺交換後の即時登録
+
+制限:
+- 画像ファイルサイズ制限あり
+- テナントごとのリクエスト数上限あり（名刺読み取りAPIの月間上限）
+- OCR精度は画像品質に依存
+- APIキーごとのレート制限適用"' -i "${YAML_FILE}"
+
+echo
+echo "=================================================================================="
+echo "Successfully updated 6 descriptions (more detailed, under 950 chars)"
+echo "Output saved to: ${YAML_FILE}"
+echo "=================================================================================="

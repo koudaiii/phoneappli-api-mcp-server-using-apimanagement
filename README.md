@@ -113,7 +113,11 @@ export ENVIRONMENT="production"
 ├── script/                    # 自動化スクリプト
 │   ├── bootstrap             # 環境セットアップ
 │   ├── validate              # OpenAPI バリデーション
+│   ├── analyzer              # API description 解析
+│   ├── fix-descriptions      # Description の 1000文字制限対応
 │   ├── deploy                # デプロイ実行
+│   ├── reimport              # API の再インポート
+│   ├── test                  # API テスト
 │   └── cleanup               # リソース削除
 ├── src/                       # Python 実装
 │   ├── validate.py           # OpenAPI バリデーションロジック
@@ -134,6 +138,72 @@ Python スクリプトを直接実行することも可能です:
 ```bash
 uv run python src/validate.py docs/v1.20.0.yaml
 ```
+
+### API Description の解析
+
+MCPツール登録には description が1000文字以内である必要があります。現在の状態を確認:
+
+```bash
+./script/analyzer
+```
+
+出力例:
+```
+====================================================================================================
+OpenAPI 仕様書解析結果: ./docs/v1.20.0.yaml
+検出されたエンドポイント数: 45
+====================================================================================================
+
+📊 統計情報:
+  📝 総エンドポイント数: 45
+  ⚠️  1000文字超過: 0 個
+  📏 最大記述文字数: 992
+  📏 最小記述文字数: 17
+  📏 平均記述文字数: 453.9
+```
+
+### Description の修正
+
+1000文字を超える description を自動的に950文字以内に短縮（情報を保持）:
+
+```bash
+./script/fix-descriptions
+```
+
+このスクリプトは:
+- 1000文字を超える description を950文字以内に短縮
+- 重要な情報（パラメータ、機能、制限事項）を保持
+- YAML構造を完全に保持（yqを使用）
+
+### API の再インポート
+
+既存の API Management インスタンスに API を再インポート:
+
+```bash
+./script/reimport -g <resource-group> -apim <apim-name>
+```
+
+オプション:
+- `-g, --resource-group`: Azure リソースグループ名（必須）
+- `-apim, --apim-name`: API Management サービス名（必須）
+- `-api, --api-id`: API ID（オプション、デフォルト: phoneappli-api）
+- `-spec, --spec-file`: OpenAPI Spec ファイルパス（オプション、デフォルト: docs/v1.20.0.yaml）
+
+例:
+```bash
+# 基本的な使い方
+./script/reimport -g my-resource-group -apim my-apim-service
+
+# カスタム設定
+./script/reimport -g my-rg -apim my-apim -api custom-api-id -spec docs/custom.yaml
+```
+
+このスクリプトは:
+1. OpenAPI Spec をバリデーション
+2. Description の長さを解析
+3. 現在のAPI設定をバックアップ
+4. API を再インポート
+5. 結果を表示
 
 ### API の手動インポート
 
