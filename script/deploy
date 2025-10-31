@@ -62,7 +62,6 @@ az deployment group create \
     --template-file main.bicep \
     --parameters main.bicepparam \
     --parameters apimServiceName="${RESOURCE_GROUP}" \
-    --parameters environment="${ENVIRONMENT}" \
     --output table
 
 echo -e "${GREEN}✓ Bicep deployment completed${NC}"

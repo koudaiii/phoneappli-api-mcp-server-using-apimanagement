@@ -16,13 +16,8 @@ param publisherName string
 @description('Tags to apply to all resources')
 param tags object = {}
 
-@description('Environment to deploy (sandbox or production)')
-@allowed(['sandbox', 'production'])
-param environment string = 'sandbox'
-
 // Variables
 var defaultTags = {
-  environment: 'development'
   project: 'phoneappli-api-mcp-server'
 }
 
@@ -37,7 +32,6 @@ module resources './resources.bicep' = {
     publisherEmail: publisherEmail
     publisherName: publisherName
     tags: allTags
-    environment: environment
   }
 }
 

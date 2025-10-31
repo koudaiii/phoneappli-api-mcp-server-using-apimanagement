@@ -18,6 +18,3 @@ param tags = {
   managedBy: 'bicep'
   cost-center: 'engineering'
 }
-
-// Environment (sandbox or production)
-param environment = 'sandbox'

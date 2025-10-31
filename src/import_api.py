@@ -80,29 +80,9 @@ def generate_api_policy(environment: str = "sandbox") -> str:
     Returns:
         Policy XML string
     """
-    policy_xml = f"""<policies>
+    policy_xml = """<policies>
     <inbound>
         <base />
-        <!-- Set X-Pa-Api-Key header from named value -->
-        <set-header name="X-Pa-Api-Key" exists-action="override">
-            <value>{{{{{{{{phoneappli-api-key-{environment}}}}}}}}}</value>
-        </set-header>
-        <!-- Check if X-Pa-Api-Key header exists -->
-        <choose>
-            <when condition="@(context.Request.Headers.GetValueOrDefault(&quot;X-Pa-Api-Key&quot;,&quot;&quot;) == &quot;&quot;)">
-                <return-response>
-                    <set-status code="401" reason="Unauthorized" />
-                    <set-header name="Content-Type" exists-action="override">
-                        <value>application/json</value>
-                    </set-header>
-                    <set-body>@{{
-                        return new JObject(
-                            new JProperty("error", "X-Pa-Api-Key header is required")
-                        ).ToString();
-                    }}</set-body>
-                </return-response>
-            </when>
-        </choose>
     </inbound>
     <backend>
         <base />
