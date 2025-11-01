@@ -25,6 +25,7 @@ Azure API Management Basic v2 を使用した PHONE APPLI API の MCP サーバ�
 - **Python**: 3.11 以上
 - **uv**: Python パッケージマネージャー ([インストール方法](https://docs.astral.sh/uv/))
 - **Azure CLI**: Azure コマンドラインツール ([インストール方法](https://learn.microsoft.com/cli/azure/install-azure-cli))
+- **yq**: YAML プロセッサー ([インストール方法](https://github.com/mikefarah/yq#install))
 - **Azure サブスクリプション**: アクティブな Azure サブスクリプション
 
 ## クイックスタート
@@ -476,6 +477,23 @@ az deployment group create \
 
 ```bash
 curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+### yq が見つからない
+
+macOS:
+```bash
+brew install yq
+```
+
+Linux:
+```bash
+# Debian/Ubuntu
+sudo apt-get install yq
+
+# または、バイナリを直接ダウンロード
+wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/local/bin/yq
+chmod +x /usr/local/bin/yq
 ```
 
 ### Azure CLI のバージョンが古い

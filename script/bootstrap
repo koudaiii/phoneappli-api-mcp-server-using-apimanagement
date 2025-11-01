@@ -67,6 +67,21 @@ else
     echo -e "${GREEN}✓ Bicep installed${NC}"
 fi
 
+# Check if yq is installed
+echo -n "Checking for yq... "
+if ! command -v yq &> /dev/null; then
+    echo -e "${RED}✗${NC}"
+    echo -e "${RED}Error: yq is not installed.${NC}"
+    echo "Please install yq: brew install yq"
+    exit 1
+else
+    echo -e "${GREEN}✓${NC}"
+    YQ_VERSION=$(yq --version 2>/dev/null | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+    if [ -n "$YQ_VERSION" ]; then
+        echo "  yq version: ${YQ_VERSION}"
+    fi
+fi
+
 echo ""
 echo -e "${GREEN}==> Bootstrap completed successfully!${NC}"
 echo ""
