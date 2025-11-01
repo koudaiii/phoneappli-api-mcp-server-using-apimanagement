@@ -63,6 +63,52 @@ info:
 
     By using this API, you agree to the [PHONE APPLI API Terms of Service](https://phoneappli.net/product/agreement/pa_api/)
 
+
+    # Limitations
+    ## Rate Limiting
+    - Request limits per API key are enforced using a token bucket algorithm.
+    - Current rate limit details can be checked via response headers.
+    - Request limits may vary depending on system load conditions.
+    - For errors when rate limits are exceeded, refer to [Error Responses](#section/Error-Responses).
+    - Some APIs have separate rate limits per tenant in addition to these rate limits.
+
+    #### Response Headers
+    Response headers include the following:
+    | Header Name | Description |
+    | -- | -- |
+    | x-ratelimit-remaining | Number of tokens remaining |
+    | x-ratelimit-requested-tokens | Number of tokens used to process the request |
+    | x-ratelimit-burst-capacity | Maximum number of tokens the bucket can hold |
+    | x-ratelimit-replenish-rate | Number of tokens replenished per second |
+
+    ## Access Permissions
+    The API can be used within the scope of viewing and editing permissions held by the user who issued the API key.
+
+    ## API Key Issuance Limit
+    Up to 10 API keys can be issued per user simultaneously.
+
+    # Error Responses
+    When errors occur, the following HTTP status codes and statuses are returned. The status is included in a JSON-formatted error object. As an exception, an HTML error page may be returned.
+
+    | Code | Status | Description |
+    | -- | -- | -- |
+    | 400 | INVALID_ARGUMENT | When the request syntax is incorrect |
+    | 401 | UNAUTHENTICATED | When authentication information is missing |
+    | 403 | RESOURCE_PERMISSION_DENIED | When the target resource is outside the permission scope |
+    | 403 | API_PERMISSION_DENIED | When the target API is outside the permission scope |
+    | 403 | ACCESS_DENIED | When the IP address is restricted |
+    | 403 | PROFILE_ITEM_NOT_EDITABLE | When the target profile item is set to non-editable |
+    | 404 | NOT_FOUND | When the target resource does not exist |
+    | 405 | METHOD_NOT_ALLOWED | When the request method is not acceptable |
+    | 406 | NOT_ACCEPTABLE | When a response cannot be provided in the specified data format |
+    | 409 | CONFLICT | When the request conflicts with the server state |
+    | 409 | ALREADY_EXISTS | When it duplicates an existing resource |
+    | 413 | PAYLOAD_TOO_LARGE | When the requested data size exceeds the limit |
+    | 415 | UNSUPPORTED_MEDIA_TYPE | When the data format is not acceptable |
+    | 422 | UNPROCESSABLE | When the request syntax is correct but the instruction cannot be executed |
+    | 429 | - | When the number of requests exceeds the limit |
+    | 500 | INTERNAL_SERVER_ERROR | When an internal error occurs |
+    | 503 | SERVICE_UNAVAILABLE | When the server is down |
     '
   version: '1.20'
   contact:
