@@ -251,6 +251,97 @@ MCP (Model Context Protocol) 要件:
 - **summary**: 日本語 → 英語（例: `社内連絡先一覧取得` → `List Internal Contacts`）
   - ⚠️ **重要**: summary は MCP Tools Name として使用されるため、英語が必須です
 
+### Description の管理
+
+各エンドポイントの description は MCP Tools として使用される際に重要な情報を提供します。
+
+#### Description の確認
+
+description の状態を確認:
+
+```bash
+# デフォルト（docs/v1.20.0.yaml をチェック）
+./script/check-descriptions
+
+# 別のYAMLファイルをチェック
+./script/check-descriptions docs/vX.XX.X.yaml
+```
+
+このスクリプトは以下をチェック:
+- ✅ 空の description を検出
+- ✅ 1000文字を超える description を検出（MCP Tools の制限）
+- ✅ すべての description をリスト表示
+
+出力例:
+```
+=== Checking descriptions in docs/v1.20.0.yaml ===
+Maximum description length for MCP Tools: 1000 characters
+
+=== Issues ===
+
+✅ No issues found!
+
+=== All Descriptions ===
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Path: GET /users
+Operation ID: list_internal_contacts
+Summary: List Internal Contacts
+Description Length: 902 chars
+
+Description:
+ツール名: List Internal Contacts
+説明: 社内電話帳に登録された連絡先（ユーザ）の情報を一覧で取得します。
+...
+
+=== Summary ===
+Total endpoints: 42
+Empty descriptions: 0
+Too long (> 1000 chars): 0
+OK: 42
+```
+
+#### Description フォーマットガイドライン
+
+description を追加する際は、`docs/sample-description-for-mcp.md` のテンプレートを参照してください:
+
+```yaml
+description: |
+  ツール名: [英語のツール名]
+  説明: [日本語の簡潔な説明]
+
+  機能:
+  - [機能1の説明]
+  - [機能2の説明]
+
+  パラメータ:
+  必須パラメータ:
+  - [パラメータ名] ([type]): [説明]
+
+  オプションパラメータ:
+  - [パラメータ名] ([type]): [説明] (デフォルト: [値])
+
+  取得できるデータ:
+  - [データ項目1]
+  - [データ項目2]
+
+  用途:
+  - [ユースケース1]
+  - [ユースケース2]
+
+  制限:
+  - [制限事項1]
+  - APIキーごとのレート制限適用
+
+  例:
+  ```
+  METHOD /path
+  [リクエスト例]
+  ```
+```
+
+⚠️ **重要**: description は1000文字以内に収める必要があります（MCP Tools の制限）
+
 ### API の再インポート
 
 既存の API Management インスタンスに API を再インポート:

@@ -1,0 +1,126 @@
+#!/bin/bash
+
+# descriptionの状態を確認するスクリプト
+# - 空のdescriptionを検出
+# - 1000文字を超えるdescriptionを検出（MCP Tools の制限）
+# - すべてのdescriptionをリスト表示
+
+set -euo pipefail
+
+YAML_FILE="${1:-docs/v1.20.0.yaml}"
+MAX_LENGTH=1000
+
+echo "=== Checking descriptions in ${YAML_FILE} ==="
+echo "Maximum description length for MCP Tools: ${MAX_LENGTH} characters"
+echo ""
+
+# yqがインストールされているか確認
+if ! command -v yq &> /dev/null; then
+    echo "Error: yq is not installed. Please install yq first."
+    echo "  brew install yq"
+    exit 1
+fi
+
+EMPTY_COUNT=0
+TOO_LONG_COUNT=0
+TOTAL_COUNT=0
+
+# エラーがあるエンドポイントを先に表示
+echo "=== Issues ==="
+echo ""
+
+HAS_ISSUES=false
+
+# pathsの各エンドポイントをチェック
+for path in $(yq eval '.paths | keys | .[]' "${YAML_FILE}"); do
+    for method in get post put patch delete; do
+        # そのメソッドが存在するかチェック
+        if yq eval ".paths[\"${path}\"].${method}" "${YAML_FILE}" | grep -q "null"; then
+            continue
+        fi
+
+        TOTAL_COUNT=$((TOTAL_COUNT + 1))
+
+        # operationId, summary, descriptionを取得
+        operation_id=$(yq eval ".paths[\"${path}\"].${method}.operationId // \"N/A\"" "${YAML_FILE}")
+        summary=$(yq eval ".paths[\"${path}\"].${method}.summary // \"N/A\"" "${YAML_FILE}")
+        description=$(yq eval ".paths[\"${path}\"].${method}.description // \"\"" "${YAML_FILE}")
+
+        DESC_LENGTH=${#description}
+
+        # 空のdescriptionをチェック
+        if [ -z "$description" ] || [ "$description" = "null" ]; then
+            METHOD_UPPER=$(echo "$method" | tr '[:lower:]' '[:upper:]')
+            echo "❌ EMPTY: ${METHOD_UPPER} ${path}"
+            echo "   Operation ID: ${operation_id}"
+            echo "   Summary: ${summary}"
+            echo ""
+            EMPTY_COUNT=$((EMPTY_COUNT + 1))
+            HAS_ISSUES=true
+        # 1000文字を超えるdescriptionをチェック
+        elif [ "$DESC_LENGTH" -gt "$MAX_LENGTH" ]; then
+            METHOD_UPPER=$(echo "$method" | tr '[:lower:]' '[:upper:]')
+            echo "⚠️  TOO LONG (${DESC_LENGTH} chars): ${METHOD_UPPER} ${path}"
+            echo "   Operation ID: ${operation_id}"
+            echo "   Summary: ${summary}"
+            echo "   Exceeds MCP Tools limit by: $((DESC_LENGTH - MAX_LENGTH)) chars"
+            echo ""
+            TOO_LONG_COUNT=$((TOO_LONG_COUNT + 1))
+            HAS_ISSUES=true
+        fi
+    done
+done
+
+if [ "$HAS_ISSUES" = false ]; then
+    echo "✅ No issues found!"
+    echo ""
+fi
+
+# すべてのdescriptionをリスト表示
+echo "=== All Descriptions ==="
+echo ""
+
+for path in $(yq eval '.paths | keys | .[]' "${YAML_FILE}"); do
+    for method in get post put patch delete; do
+        # そのメソッドが存在するかチェック
+        if yq eval ".paths[\"${path}\"].${method}" "${YAML_FILE}" | grep -q "null"; then
+            continue
+        fi
+
+        # operationId, summary, descriptionを取得
+        operation_id=$(yq eval ".paths[\"${path}\"].${method}.operationId // \"N/A\"" "${YAML_FILE}")
+        summary=$(yq eval ".paths[\"${path}\"].${method}.summary // \"N/A\"" "${YAML_FILE}")
+        description=$(yq eval ".paths[\"${path}\"].${method}.description // \"\"" "${YAML_FILE}")
+
+        DESC_LENGTH=${#description}
+
+        METHOD_UPPER=$(echo "$method" | tr '[:lower:]' '[:upper:]')
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "Path: ${METHOD_UPPER} ${path}"
+        echo "Operation ID: ${operation_id}"
+        echo "Summary: ${summary}"
+        echo "Description Length: ${DESC_LENGTH} chars"
+        echo ""
+        echo "Description:"
+        echo "${description}"
+        echo ""
+    done
+done
+
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
+echo "=== Summary ==="
+echo "Total endpoints: ${TOTAL_COUNT}"
+echo "Empty descriptions: ${EMPTY_COUNT}"
+echo "Too long (> ${MAX_LENGTH} chars): ${TOO_LONG_COUNT}"
+echo "OK: $((TOTAL_COUNT - EMPTY_COUNT - TOO_LONG_COUNT))"
+
+if [ "$EMPTY_COUNT" -gt 0 ] || [ "$TOO_LONG_COUNT" -gt 0 ]; then
+    echo ""
+    echo "⚠️  Please fix the issues above"
+    exit 1
+else
+    echo ""
+    echo "✅ All descriptions are valid!"
+    exit 0
+fi
