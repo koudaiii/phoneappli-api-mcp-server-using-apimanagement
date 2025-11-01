@@ -1,0 +1,78 @@
+#!/usr/bin/env bash
+#
+# check-mcp-compatibility - OpenAPI仕様書のMCP互換性チェック
+#
+# このスクリプトは、OpenAPI仕様書のタグ名とoperationIdを抽出して表示します。
+# 作業前後で実行することで、変更内容を確認できます。
+#
+
+set -e
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+SPEC_FILE="${1:-$PROJECT_ROOT/docs/v1.20.0.yaml}"
+
+# 色の定義
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+CYAN='\033[0;36m'
+NC='\033[0m' # No Color
+
+echo -e "${CYAN}=====================================================================================================${NC}"
+echo -e "${CYAN}MCP互換性チェック: ${SPEC_FILE}${NC}"
+echo -e "${CYAN}=====================================================================================================${NC}"
+echo ""
+
+# ファイルの存在確認
+if [ ! -f "$SPEC_FILE" ]; then
+    echo -e "${RED}エラー: ファイルが見つかりません: ${SPEC_FILE}${NC}"
+    exit 1
+fi
+
+# yqのインストール確認
+if ! command -v yq &> /dev/null; then
+    echo -e "${RED}エラー: yqがインストールされていません${NC}"
+    echo "インストール方法: brew install yq"
+    exit 1
+fi
+
+echo -e "${BLUE}📊 統計情報:${NC}"
+
+# タグ数をカウント
+TOTAL_TAGS=$(yq '.tags | length' "$SPEC_FILE")
+echo -e "  総タグ数: ${TOTAL_TAGS}"
+
+# エンドポイント数をカウント
+TOTAL_OPERATIONS=$(yq '[.paths[][]] | length' "$SPEC_FILE")
+echo -e "  総エンドポイント数: ${TOTAL_OPERATIONS}"
+
+echo ""
+echo -e "${BLUE}🔍 抽出結果:${NC}"
+echo ""
+
+# 1. タグ名を抽出
+echo -e "${CYAN}[1] タグ名一覧${NC}"
+yq '.tags[].name' "$SPEC_FILE" | while read -r tag; do
+    echo -e "  • ${tag}"
+done
+echo ""
+
+# 2. operationIdを抽出
+echo -e "${CYAN}[2] operationId一覧${NC}"
+yq '.paths[][].operationId // ""' "$SPEC_FILE" | grep -v '^$' | while read -r op_id; do
+    echo -e "  • ${op_id}"
+done
+echo ""
+
+# 3. summaryを抽出（MCP Tools の Name になる）
+echo -e "${CYAN}[3] summary一覧 (MCP Tools Name)${NC}"
+yq '.paths[][] | select(.summary) | .summary' "$SPEC_FILE" | while read -r summary; do
+    echo -e "  • ${summary}"
+done
+echo ""
+
+echo -e "${CYAN}=====================================================================================================${NC}"
+echo -e "${GREEN}✓ 抽出完了${NC}"
+echo -e "${CYAN}=====================================================================================================${NC}"

@@ -1,0 +1,159 @@
+#!/usr/bin/env python3
+"""
+OpenAPI Specification English Conversion Script
+
+This script converts Japanese summaries and PascalCase operationIds to English and snake_case.
+Based on the existing descriptions which already contain English tool names.
+"""
+
+import sys
+from pathlib import Path
+
+import yaml
+
+# Mapping from PascalCase operationId to snake_case
+OPERATION_ID_MAPPING = {
+    "UsersGet": "list_internal_contacts",
+    "UsersPost": "create_internal_contact",
+    "UsersUserIdGet": "get_internal_contact",
+    "UsersUserIdPatch": "update_internal_contact",
+    "UsersUserIdDelete": "delete_internal_contact",
+    "ProfileGet": "get_user_profile",
+    "ProfilePatch": "update_user_profile",
+    "PhotoGet": "get_user_photo",
+    "PhotoPut": "update_user_photo",
+    "PhotoDelete": "delete_user_photo",
+    "DivisionsGet": "list_departments",
+    "DivisionsPost": "create_department",
+    "DivisionsDivisionIdGet": "get_department",
+    "DivisionsDivisionIdPatch": "update_department",
+    "DivisionsDivisionIdDelete": "delete_department",
+    "DestinationsPatch": "update_destinations",
+    "ExternalContactsGet": "list_external_contacts",
+    "ExternalContactsPost": "create_external_contact",
+    "ExternalContactsPatch": "update_external_contact",
+    "ExternalContactsDelete": "delete_external_contact",
+    "BusinessCardPost": "scan_business_card",
+    "BusinessCardGet": "get_business_card_image",
+    "BusinessCardPut": "update_business_card_image",
+    "BusinessCardDelete": "delete_business_card_image",
+    "ExternalContactsFoldersGet": "list_external_contact_folders",
+    "SharedContactsFoldersGet": "list_shared_contact_folders",
+    "SharedContactsFoldersPost": "create_shared_contact_folder",
+    "SharedContactsFolderPatch": "update_shared_contact_folder",
+    "SharedContactsFolderDivisionAuthoritiesGet": "get_folder_department_permissions",
+    "SharedContactsFolderDivisionAuthoritiesPatch": "update_folder_department_permissions",
+    "SharedContactsFolderUserAuthoritiesGet": "get_folder_user_permissions",
+    "SharedContactsFolderUserAuthoritiesPatch": "update_folder_user_permissions",
+    "PersonalContactsFoldersGet": "list_personal_contact_folders",
+    "PersonalContactsFoldersPost": "create_personal_contact_folder",
+    "PersonalContactsFolderPatch": "update_personal_contact_folder",
+    "PhoneNumContactsGet": "identify_contact_by_phone",
+    "IncomingCallHistoriesGet": "list_incoming_call_history",
+    "IncomingCallHistoriesPost": "add_incoming_call_history",
+    "IncomingCallHistoryPatch": "update_incoming_call_history",
+    "OutgoingCallHistoriesGet": "list_outgoing_call_history",
+    "OutgoingCallHistoriesPost": "add_outgoing_call_history",
+    "OutgoingCallHistoryPatch": "update_outgoing_call_history",
+    "PermissionsGet": "get_permissions",
+    "LocationsPatch": "register_location",
+    "ThanksCardsPost": "send_thanks_card",
+}
+
+# Mapping from Japanese summary to English summary
+SUMMARY_MAPPING = {
+    "社内連絡先一覧取得": "List Internal Contacts",
+    "社内連絡先作成": "Create Internal Contact",
+    "社内連絡先取得": "Get Internal Contact",
+    "社内連絡先編集": "Update Internal Contact",
+    "社内連絡先削除": "Delete Internal Contact",
+    "プロフィール取得": "Get User Profile",
+    "プロフィール編集": "Update User Profile",
+    "顔写真取得": "Get User Photo",
+    "顔写真更新": "Update User Photo",
+    "顔写真削除": "Delete User Photo",
+    "部署一覧取得": "List Departments",
+    "部署作成": "Create Department",
+    "部署取得": "Get Department",
+    "部署編集": "Update Department",
+    "部署削除": "Delete Department",
+    "行き先一括編集": "Update Destinations",
+    "社外連絡先一覧取得": "List External Contacts",
+    "社外連絡先作成": "Create External Contact",
+    "社外連絡先編集": "Update External Contact",
+    "社外連絡先削除": "Delete External Contact",
+    "名刺読み取り": "Scan Business Card",
+    "名刺画像取得": "Get Business Card Image",
+    "名刺画像更新": "Update Business Card Image",
+    "名刺画像削除": "Delete Business Card Image",
+    "社外電話帳フォルダ一覧取得": "List External Contact Folders",
+    "共有電話帳フォルダ一覧取得": "List Shared Contact Folders",
+    "共有電話帳フォルダ作成": "Create Shared Contact Folder",
+    "共有電話帳フォルダ編集": "Update Shared Contact Folder",
+    "フォルダの部署権限取得": "Get Folder Department Permissions",
+    "フォルダの部署権限編集": "Update Folder Department Permissions",
+    "フォルダのユーザ権限取得": "Get Folder User Permissions",
+    "フォルダのユーザ権限編集": "Update Folder User Permissions",
+    "個人電話帳フォルダ一覧取得": "List Personal Contact Folders",
+    "個人電話帳フォルダ作成": "Create Personal Contact Folder",
+    "個人電話帳フォルダ編集": "Update Personal Contact Folder",
+    "連絡先の特定": "Identify Contact by Phone",
+    "着信履歴一覧取得": "List Incoming Call History",
+    "着信履歴追加": "Add Incoming Call History",
+    "着信履歴編集": "Update Incoming Call History",
+    "発信履歴一覧取得": "List Outgoing Call History",
+    "発信履歴追加": "Add Outgoing Call History",
+    "発信履歴編集": "Update Outgoing Call History",
+    "権限取得": "Get Permissions",
+    "位置情報登録": "Register Location",
+    "THANKS カード送信": "Send Thanks Card",
+}
+
+
+def convert_spec(spec_file: Path) -> None:
+    """Convert OpenAPI spec to English summaries and snake_case operationIds."""
+    with open(spec_file, "r", encoding="utf-8") as f:
+        spec = yaml.safe_load(f)
+
+    # Convert paths
+    for path, path_item in spec.get("paths", {}).items():
+        for method in ["get", "post", "put", "patch", "delete"]:
+            if method in path_item:
+                operation = path_item[method]
+
+                # Convert operationId
+                old_op_id = operation.get("operationId")
+                if old_op_id and old_op_id in OPERATION_ID_MAPPING:
+                    operation["operationId"] = OPERATION_ID_MAPPING[old_op_id]
+                    print(f"✓ {method.upper()} {path}: {old_op_id} -> {OPERATION_ID_MAPPING[old_op_id]}")
+
+                # Convert summary
+                old_summary = operation.get("summary")
+                if old_summary and old_summary in SUMMARY_MAPPING:
+                    operation["summary"] = SUMMARY_MAPPING[old_summary]
+                    print(f"  Summary: {old_summary} -> {SUMMARY_MAPPING[old_summary]}")
+
+    # Write back
+    with open(spec_file, "w", encoding="utf-8") as f:
+        yaml.dump(spec, f, allow_unicode=True, sort_keys=False, default_flow_style=False, width=float("inf"))
+
+    print(f"\n✓ Conversion complete: {spec_file}")
+
+
+def main() -> int:
+    """Main function."""
+    if len(sys.argv) < 2:
+        print("Usage: convert-to-english <spec-file>")
+        return 1
+
+    spec_file = Path(sys.argv[1])
+    if not spec_file.exists():
+        print(f"Error: File not found: {spec_file}")
+        return 1
+
+    convert_spec(spec_file)
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
