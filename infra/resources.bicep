@@ -66,7 +66,7 @@ module apimService 'br/public:avm/res/api-management/service:0.9.0' = {
               </cors>
             </inbound>
             <backend>
-              <forward-request />
+              <forward-request timeout="120" />
             </backend>
             <outbound />
             <on-error />
